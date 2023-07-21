@@ -4,18 +4,18 @@ import pandas as pd
 template = openpyxl.load_workbook('template.xlsx')
 worksheet = template.worksheets[0]
 
-data = pd.read_excel('results.xlsx')
+data = pd.read_excel('results.xlsx', skiprows=1, header=None)
 
 scoreList = []
 currentCourseColumn = 11
 
-for index, row in data.iterrows():
+for _, row in data.iterrows():
 
-    lastName = row['SURNAME']
-    firstName = row['FIRST NAME']
-    middleName = row['MIDDLE NAME']
+    lastName = row.iloc[1]
+    firstName = row.iloc[1]
+    middleName = row.iloc[2]
     
-    score = data.iloc[index,5:].values
+    score = row.iloc[5:].values
 
     score = pd.Series(score).fillna('NA').values
 
