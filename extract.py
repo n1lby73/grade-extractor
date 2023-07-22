@@ -124,9 +124,6 @@ while True:
 template = openpyxl.load_workbook(resultTemplate)
 worksheet = template.worksheets[0]
 
-# workbook = openpyxl.load_workbook('emyety.xlsm')
-# sheet_names = workbook.sheetnames
-
 data = pd.read_excel('emyety.xlsm', sheet_name=className, skiprows=5, header=None, nrows=24)
 
 scoreList = []
@@ -171,3 +168,11 @@ for _, row in data.iterrows():
     except:
 
         pass
+
+# loop to delete null report file created cause of incomplete class
+
+for filename in os.listdir(path):
+        if "nan" in filename:
+            file_path = os.path.join(path, filename)
+
+            os.remove(file_path)
