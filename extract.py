@@ -1,7 +1,48 @@
-import openpyxl
 import pandas as pd
-import os
+import openpyxl
+import shutil
 import sys
+import os
+
+
+def createFolder(nameOfFolder):
+
+    if not os.path.exists(nameOfFolder):
+
+        os.mkdir(nameOfFolder)
+
+        folderName = nameOfFolder
+
+        return folderName
+ 
+    while True:
+
+        confirmAction = input("Folder name ({}) already exist, do you want to overwrite [y/n]: ".format(nameOfFolder))
+
+        if confirmAction == 'y' or confirmAction == 'Y':
+
+            shutil.rmtree(nameOfFolder)
+
+            os.mkdir(nameOfFolder)
+
+            folderName = nameOfFolder
+
+            break
+
+            
+        elif confirmAction == 'n' or confirmAction == 'N':
+
+            newdir = input("Input new folder name: ")
+
+            folderName = createFolder(newdir)
+
+            break
+
+        else:
+
+            print('\nWrong value entered')
+    
+    return folderName
 
 print ("1. EMY \n2. ETY")
 
@@ -55,8 +96,10 @@ while True:
             confirmSelection = input("Do you want to generate result sheet for every student in "+ className + " (Y/N): ")
 
             if confirmSelection == "y" or confirmSelection == "Y":
+
+                folder = className + " individual compiled result"
                 
-                path = os.makedirs(className + " individual compiled result")
+                path = createFolder(folder)
 
                 break
 
@@ -77,10 +120,10 @@ while True:
 template = openpyxl.load_workbook(resultTemplate)
 worksheet = template.worksheets[0]
 
-workbook = openpyxl.load_workbook('emyety.xlsm')
-sheet_names = workbook.sheetnames
+# workbook = openpyxl.load_workbook('emyety.xlsm')
+# sheet_names = workbook.sheetnames
 
-data = pd.read_excel('results.xlsx', sheet_name=className, skiprows=1, header=None)
+data = pd.read_excel('emyety.xlsm', sheet_name=className, skiprows=1, header=None)
 
 scoreList = []
 currentCourseColumn = 11
@@ -117,4 +160,4 @@ for _, row in data.iterrows():
     scoreList = []
     currentCourseColumn = 11
 
-    template.save('path/{}.xlsx'.format(name))
+    template.save('{}/{}.xlsx'.format(path,name))
