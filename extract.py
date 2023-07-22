@@ -4,6 +4,7 @@ import shutil
 import sys
 import os
 
+#function to create folder
 
 def createFolder(nameOfFolder):
 
@@ -44,6 +45,8 @@ def createFolder(nameOfFolder):
     
     return folderName
 
+# allow user to select programe name
+
 print ("1. EMY \n2. ETY")
 
 try:
@@ -77,6 +80,8 @@ except ValueError:
     print('Please select from the above option')
 
     os.execv(sys.executable, ['python'] + sys.argv)
+
+# allow user to select class number
 
 while True:
 
@@ -121,6 +126,8 @@ while True:
 
         print("Please input a number\n")
 
+#load work sheet        
+
 template = openpyxl.load_workbook(resultTemplate)
 worksheet = template.worksheets[0]
 
@@ -131,6 +138,8 @@ currentCourseColumn = 11
 trackFailure = 0
 probation = []
 termination = []
+
+# iterate through worksheet and manipulate data
 
 for _, row in data.iterrows():
 
@@ -171,8 +180,7 @@ for _, row in data.iterrows():
     worksheet.cell(row=4, column=3, value=fullPrograme)
     worksheet.cell(row=4, column=5, value=className)
 
-    scoreList = []
-    currentCourseColumn = 11
+    # check number of failed courses
 
     if trackFailure == 2:
 
@@ -182,7 +190,13 @@ for _, row in data.iterrows():
 
         termination.append(name)
 
+    # clear variable memory
+
     trackFailure = 0
+    scoreList = []
+    currentCourseColumn = 11
+
+    #save file
 
     try:
 
