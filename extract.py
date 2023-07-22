@@ -128,6 +128,9 @@ data = pd.read_excel('emyety.xlsm', sheet_name=className, skiprows=5, header=Non
 
 scoreList = []
 currentCourseColumn = 11
+trackFailure = 0
+probation = []
+termination = []
 
 for _, row in data.iterrows():
 
@@ -147,6 +150,16 @@ for _, row in data.iterrows():
 
     for scores in scoreList[:32]:
 
+        try:
+
+            if int(scores) < 60:
+
+                trackFailure += 1
+        
+        except:
+
+            pass
+
         worksheet.cell(row=currentCourseColumn, column=4, value=scores)
 
         currentCourseColumn += 1
@@ -161,6 +174,16 @@ for _, row in data.iterrows():
     scoreList = []
     currentCourseColumn = 11
 
+    if trackFailure == 2:
+
+        probation.append(name)
+
+    if trackFailure > 2:
+
+        termination.append(name)
+
+    trackFailure = 0
+
     try:
 
         template.save('{}/{}.xlsx'.format(path,name))
@@ -172,7 +195,23 @@ for _, row in data.iterrows():
 # loop to delete null report file created cause of incomplete class
 
 for filename in os.listdir(path):
-        if "nan" in filename:
-            file_path = os.path.join(path, filename)
+        
+    if "nan" in filename:
 
-            os.remove(file_path)
+        file_path = os.path.join(path, filename)
+
+        os.remove(file_path)
+
+# display student on probation
+
+print ("\nThe following student are on probation: ")
+
+for watchlist in probation:
+    print(watchlist)
+
+# display student on termination
+
+print ("\nThe following student are on termination: ")
+
+for watchlist in termination:
+    print(watchlist)
