@@ -19,9 +19,13 @@ try:
 
         programe = 'EMY'
 
+        resultTemplate = 'emyTemplate.xlsx'
+
     else:
 
         programe = "ETY"
+
+        resultTemplate = 'etyTemplate.xlsx'
 
 except ValueError:
 
@@ -46,57 +50,71 @@ while True:
 
             os.execv(sys.executable, ['python'] + sys.argv)
 
+        while True:
+
+            confirmSelection = input("Do you want to generate result sheet for every student in "+ className + " (Y/N): ")
+
+            if confirmSelection == "y" or confirmSelection == "Y":
+                
+                path = os.makedirs(className + " individual compiled result")
+
+                break
+
+            elif confirmSelection == "n" or confirmSelection == "N":
+
+                os.execv(sys.executable, ['python'] + sys.argv)
+
+            else:
+
+                print ("wrong value entered")
+
         break
 
     except ValueError:
 
         print("Please input a number\n")
 
-
-className = programe+"-C"+classNumber
+template = openpyxl.load_workbook(resultTemplate)
+worksheet = template.worksheets[0]
 
 workbook = openpyxl.load_workbook('emyety.xlsm')
 sheet_names = workbook.sheetnames
 
-template = openpyxl.load_workbook('emyTemplate.xlsx')
-worksheet = template.worksheets[0]
+data = pd.read_excel('results.xlsx', sheet_name=className, skiprows=1, header=None)
 
-# workbook = openpyxl.load_workbook('emyety.xlsm')
-# sheet_names = workbook.sheetnames
+scoreList = []
+currentCourseColumn = 11
 
-# data = pd.read_excel('results.xlsx', skiprows=1, header=None)
+for _, row in data.iterrows():
 
-# scoreList = []
-# currentCourseColumn = 11
-
-# for _, row in data.iterrows():
-
-#     lastName = row.iloc[1]
-#     firstName = row.iloc[1]
-#     middleName = row.iloc[2]
+    lastName = row.iloc[1]
+    firstName = row.iloc[1]
+    middleName = row.iloc[2]
     
-#     score = row.iloc[5:].values
+    score = row.iloc[5:].values
 
-#     score = pd.Series(score).fillna('NA').values
+    score = pd.Series(score).fillna('NA').values
 
-#     for scores in score[:33]:
+    for scores in score[:33]:
 
-#         scoreList.append(scores)
+        scoreList.append(scores)
     
-#     average = scoreList[32]
+    average = scoreList[32]
 
-#     for scores in scoreList[:32]:
+    for scores in scoreList[:32]:
 
-#         worksheet.cell(row=currentCourseColumn, column=4, value=scores)
+        worksheet.cell(row=currentCourseColumn, column=4, value=scores)
 
-#         currentCourseColumn += 1
+        currentCourseColumn += 1
 
-#     name = lastName +" " + firstName + " " + middleName
+    name = lastName +" " + firstName + " " + middleName
 
-#     worksheet.cell(row=6, column=3, value=name)
-#     worksheet.cell(row=6, column=5, value=average)
+    worksheet.cell(row=6, column=3, value=name)
+    worksheet.cell(row=6, column=5, value=average)
+    worksheet.cell(row=4, column=3, value=programe)
+    worksheet.cell(row=4, column=5, value=className)
 
-#     scoreList = []
-#     currentCourseColumn = 11
+    scoreList = []
+    currentCourseColumn = 11
 
-#     template.save('{}.xlsx'.format(name))
+    template.save('path/{}.xlsx'.format(name))
