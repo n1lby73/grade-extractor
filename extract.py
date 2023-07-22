@@ -60,11 +60,15 @@ try:
 
         programe = 'EMY'
 
+        fullPrograme = "ElectroMechanics"
+
         resultTemplate = 'emyTemplate.xlsx'
 
     else:
 
         programe = "ETY"
+
+        fullPrograme = "ElectroTechnics"
 
         resultTemplate = 'etyTemplate.xlsx'
 
@@ -123,7 +127,7 @@ worksheet = template.worksheets[0]
 # workbook = openpyxl.load_workbook('emyety.xlsm')
 # sheet_names = workbook.sheetnames
 
-data = pd.read_excel('emyety.xlsm', sheet_name=className, skiprows=1, header=None)
+data = pd.read_excel('emyety.xlsm', sheet_name=className, skiprows=5, header=None, nrows=24)
 
 scoreList = []
 currentCourseColumn = 11
@@ -131,8 +135,8 @@ currentCourseColumn = 11
 for _, row in data.iterrows():
 
     lastName = row.iloc[1]
-    firstName = row.iloc[1]
-    middleName = row.iloc[2]
+    firstName = row.iloc[2]
+    middleName = row.iloc[3]
     
     score = row.iloc[5:].values
 
@@ -150,14 +154,20 @@ for _, row in data.iterrows():
 
         currentCourseColumn += 1
 
-    name = lastName +" " + firstName + " " + middleName
+    name = str(lastName) + " " + str(firstName) + " " + str(middleName)
 
     worksheet.cell(row=6, column=3, value=name)
     worksheet.cell(row=6, column=5, value=average)
-    worksheet.cell(row=4, column=3, value=programe)
+    worksheet.cell(row=4, column=3, value=fullPrograme)
     worksheet.cell(row=4, column=5, value=className)
 
     scoreList = []
     currentCourseColumn = 11
 
-    template.save('{}/{}.xlsx'.format(path,name))
+    try:
+
+        template.save('{}/{}.xlsx'.format(path,name))
+    
+    except:
+
+        pass
