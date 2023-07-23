@@ -281,3 +281,8 @@ sendToTelegram("ProbationList.txt", caption)
 caption = "This is a txt file containing list of student due for termination"
 
 sendToTelegram("TerminationList.txt", caption)
+
+#delete file after sending
+
+os.remove("TerminationList.txt")
+os.remove("ProbationList.txt")
