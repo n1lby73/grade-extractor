@@ -1,8 +1,12 @@
+from dotenv import load_dotenv
 import pandas as pd
+import requests
 import openpyxl
 import shutil
 import sys
 import os
+
+load_dotenv()
 
 #function to create folder
 
@@ -44,6 +48,36 @@ def createFolder(nameOfFolder):
             print('\nWrong value entered')
     
     return folderName
+
+# function to send message via telegram bot
+
+def sendToTelegram(document, caption):
+
+    apiToken = os.getenv('botToken')
+
+    chatID = os.getenv('chatID')
+    
+    apiURL = f'https://api.telegram.org/bot{apiToken}/sendDocument'
+
+    try:
+
+        payload = {'chat_id': chatID, 'caption': caption}
+        files = {'document': open(document, "rb")}
+
+        response = requests.post(apiURL, data=payload, files=files)
+
+        if response.status_code == 200:
+
+            print("Document sent successfully!")
+
+        else:
+
+            print(f"Failed to send document: {response.text}")
+            
+    except Exception as e:
+
+        print(e)
+
 
 # allow user to select programe name
 
@@ -216,16 +250,34 @@ for filename in os.listdir(path):
 
         os.remove(file_path)
 
-# display student on probation
+# create file to store probation and termination list
 
-print ("\nThe following student are on probation: ")
+probationFile = open("ProbationList.txt", "x")
+terminationFile = open("TerminationList.txt", "x")
+
+# generate student on probation
 
 for watchlist in probation:
-    print(watchlist)
+    
+    probationFile.write(watchlist + '\n')
 
-# display student on termination
-
-print ("\nThe following student are on termination: ")
+# generate student on termination
 
 for watchlist in termination:
-    print(watchlist)
+    
+    terminationFile.write(watchlist + '\n')
+
+# Save and close files before sending
+
+probationFile.close()
+terminationFile.close()
+
+# send generated data to telegram
+
+caption = "This is a txt file containing list of student due for probation"
+
+sendToTelegram("ProbationList.txt", caption)
+
+caption = "This is a txt file containing list of student due for termination"
+
+sendToTelegram("TerminationList.txt", caption)
