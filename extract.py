@@ -62,7 +62,37 @@ def sendToTelegram(document, caption):
     try:
 
         payload = {'chat_id': chatID, 'caption': caption}
-        files = {'document': open(document, "rb")}
+
+        with open(document, 'rb') as file:
+            files = file.read()
+
+        if not files:
+
+            apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
+
+            if document == 'TerminationList.txt':
+
+                text = "No student in {} is due for termination".format(className)
+
+                payload = {'chat_id': chatID, 'text': text}
+
+                response = requests.post(apiURL, data=payload)
+
+                print("Message sent successfully!")
+
+                return
+
+            else:
+
+                text = "No student in {} is due for probation".format(className)
+
+                payload = {'chat_id': chatID, 'text': text}
+
+                response = requests.post(apiURL, data=payload)
+
+                print("Message sent successfully!")
+
+                return
 
         response = requests.post(apiURL, data=payload, files=files)
 
