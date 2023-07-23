@@ -64,9 +64,10 @@ def sendToTelegram(document, caption):
         payload = {'chat_id': chatID, 'caption': caption}
 
         with open(document, 'rb') as file:
-            files = file.read()
 
-        if not files:
+            fileContent = file.read()
+
+        if not fileContent:
 
             apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
 
@@ -74,25 +75,25 @@ def sendToTelegram(document, caption):
 
                 text = "No student in {} is due for termination".format(className)
 
-                payload = {'chat_id': chatID, 'text': text}
-
-                response = requests.post(apiURL, data=payload)
-
-                print("Message sent successfully!")
-
-                return
-
             else:
 
                 text = "No student in {} is due for probation".format(className)
 
-                payload = {'chat_id': chatID, 'text': text}
+            payload = {'chat_id': chatID, 'text': text}
 
-                response = requests.post(apiURL, data=payload)
+            response = requests.post(apiURL, data=payload)
+
+            if response.status_code == 200:
 
                 print("Message sent successfully!")
 
-                return
+            else:
+
+                print(f"Failed to send message: {response.text}")
+
+            return
+
+        files = {'document': (os.path.basename(document), fileContent)}
 
         response = requests.post(apiURL, data=payload, files=files)
 
@@ -107,7 +108,6 @@ def sendToTelegram(document, caption):
     except Exception as e:
 
         print(e)
-
 
 # allow user to select programe name
 
