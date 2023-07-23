@@ -121,7 +121,7 @@ while True:
 
     try:
 
-        classNumber = int(input("Please input only number excluding 'C': "))
+        classNumber = int(input("Please input class number only excluding 'C': "))
 
         className = programe+"-C"+str(classNumber)
 
@@ -274,11 +274,11 @@ terminationFile.close()
 
 # send generated data to telegram
 
-caption = "This is a txt file containing list of student due for probation"
+caption = "This is a TXT file containing list of student in {} due for probation".format(className)
 
 sendToTelegram("ProbationList.txt", caption)
 
-caption = "This is a txt file containing list of student due for termination"
+caption = "This is a TXT file containing list of student in {} due for termination".format(className)
 
 sendToTelegram("TerminationList.txt", caption)
 
