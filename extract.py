@@ -127,7 +127,7 @@ try:
 
         programe = 'EMY'
 
-        fullPrograme = "ElectroMechanics"
+        # fullPrograme = "ElectroMechanics"
 
         resultTemplate = 'emyTemplate.xlsx'
 
@@ -135,7 +135,7 @@ try:
 
         programe = "ETY"
 
-        fullPrograme = "ElectroTechnics"
+        # fullPrograme = "ElectroTechnics"
 
         resultTemplate = 'etyTemplate.xlsx'
 
@@ -241,7 +241,7 @@ for _, row in data.iterrows():
 
     worksheet.cell(row=6, column=3, value=name)
     worksheet.cell(row=6, column=5, value=average)
-    worksheet.cell(row=4, column=3, value=fullPrograme)
+    # worksheet.cell(row=4, column=3, value=fullPrograme)
     worksheet.cell(row=4, column=5, value=className)
 
     # check number of failed courses
