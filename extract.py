@@ -127,15 +127,11 @@ try:
 
         programe = 'EMY'
 
-        # fullPrograme = "ElectroMechanics"
-
         resultTemplate = 'emyTemplate.xlsx'
 
     else:
 
         programe = "ETY"
-
-        # fullPrograme = "ElectroTechnics"
 
         resultTemplate = 'etyTemplate.xlsx'
 
@@ -190,6 +186,40 @@ while True:
 
         print("Please input a number\n")
 
+# Input current number of courses
+
+while True:
+
+    try:
+                
+        while True:
+
+            courseNumber = int(input("Please input current number of courses for " + programe + " programe: "))
+
+            confirmSelection = input("Are you sure that there are now "+ str(courseNumber) + " courses for " + programe + " programme (y/n): ")
+
+            if confirmSelection == "y" or confirmSelection == "Y":
+
+                totalCourse = courseNumber + 1 #including column for average (count start from zero)
+
+                averageValue = courseNumber
+
+                break
+
+            elif confirmSelection == "n" or confirmSelection == "N":
+
+                print ("\nPlease input correct value\n")
+
+            else:
+
+                print ("wrong value entered")
+
+        break
+
+    except ValueError:
+
+        print("Please input a number\n")    
+
 #load work sheet        
 
 template = openpyxl.load_workbook(resultTemplate)
@@ -215,13 +245,13 @@ for _, row in data.iterrows():
 
     score = pd.Series(score).fillna('NA').values
 
-    for scores in score[:33]:
+    for scores in score[:totalCourse]:
 
         scoreList.append(scores)
     
-    average = scoreList[32]
+    average = scoreList[averageValue]
 
-    for scores in scoreList[:32]:
+    for scores in scoreList[:averageValue]:
 
         try:
 
@@ -241,7 +271,6 @@ for _, row in data.iterrows():
 
     worksheet.cell(row=6, column=3, value=name)
     worksheet.cell(row=6, column=5, value=average)
-    # worksheet.cell(row=4, column=3, value=fullPrograme)
     worksheet.cell(row=4, column=5, value=className)
 
     # check number of failed courses
