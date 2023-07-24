@@ -56,12 +56,12 @@ def sendToTelegram(document, caption):
     apiToken = os.getenv('botToken')
 
     chatID = os.getenv('chatID')
+
+    payload = {'chat_id': chatID, 'caption': caption}
     
     apiURL = f'https://api.telegram.org/bot{apiToken}/sendDocument'
 
     try:
-
-        payload = {'chat_id': chatID, 'caption': caption}
 
         with open(document, 'rb') as file:
 
