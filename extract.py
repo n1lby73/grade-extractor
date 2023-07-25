@@ -224,13 +224,6 @@ while True:
 
         print("Please input a number\n")    
 
-#load work sheet        
-
-template = openpyxl.load_workbook(resultTemplate)
-templateWorksheet = template.worksheets[0]
-
-data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None, nrows=24)
-
 # selected class that code is working on
 
 currentClass = resultDb[className]
@@ -245,6 +238,12 @@ courseColumnDb = 6
 courseRowTemplate = 11
 courseColumnTemplate = 3
 
+# number of student in class
+
+numberOfStudent = 24 # that is the maximum number of student in a class
+
+# other variable
+
 scoreList = []
 currentCourseColumn = 11
 trackFailure = 0
@@ -252,6 +251,13 @@ probation = []
 termination = []
 courseNameDb = []
 courseNameTemplate = []
+
+#load work sheet        
+
+template = openpyxl.load_workbook(resultTemplate)
+templateWorksheet = template.worksheets[0]
+
+data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None, nrows=numberOfStudent)
 
 # extract all course name from db and template
 
@@ -366,8 +372,8 @@ for filename in os.listdir(path):
 
 # create file to store probation and termination list
 
-probationFile = open("ProbationList.txt", "x")
-terminationFile = open("TerminationList.txt", "x")
+probationFile = open(className + " probation List.txt", "x")
+terminationFile = open(className + " termination List.txt", "x")
 
 # generate student on probation
 
@@ -390,13 +396,13 @@ terminationFile.close()
 
 caption = "This is a TXT file containing list of student in {} due for probation".format(className)
 
-sendToTelegram("ProbationList.txt", caption)
+sendToTelegram(className + " probation List.txt", caption)
 
 caption = "This is a TXT file containing list of student in {} due for termination".format(className)
 
-sendToTelegram("TerminationList.txt", caption)
+sendToTelegram(className + " termination List.txt", caption)
 
 #delete file after sending
 
-os.remove("TerminationList.txt")
-os.remove("ProbationList.txt")
+os.remove(className + " termination List.txt")
+os.remove(className + " probation List.txt")
