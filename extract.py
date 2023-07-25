@@ -151,7 +151,7 @@ while True:
 
     try:
 
-        classNumber = int(input("Please input class number only excluding 'C': "))
+        classNumber = int(input("Please input class number only, excluding 'C': "))
 
         className = programe+"-C"+str(classNumber)
 
