@@ -109,6 +109,10 @@ def sendToTelegram(document, caption):
 
         print(e)
 
+#specify result sheet
+
+resultSheet = "emyety.xlsm"
+
 # allow user to select programe name
 
 print ("1. EMY \n2. ETY")
@@ -151,10 +155,10 @@ while True:
 
         className = programe+"-C"+str(classNumber)
 
-        workbook = openpyxl.load_workbook('emyety.xlsm')
-        sheet_names = workbook.sheetnames
+        resultDb = openpyxl.load_workbook(resultSheet)
+        classResult = resultDb.sheetnames
         
-        if className not in sheet_names:
+        if className not in classResult:
 
             print("Class details not available in excel database\nKindly provide all necessary details again or update excel database")
 
@@ -223,17 +227,49 @@ while True:
 #load work sheet        
 
 template = openpyxl.load_workbook(resultTemplate)
-worksheet = template.worksheets[0]
+templateWorksheet = template.worksheets[0]
 
-data = pd.read_excel('emyety.xlsm', sheet_name=className, skiprows=5, header=None, nrows=24)
+data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None, nrows=24)
+
+# selected class that code is working on
+
+currentClass = resultDb[className]
+
+#course index for db
+
+courseRowDb = 5
+courseColumnDb = 6
+
+#course index for template
+
+courseRowTemplate = 11
+courseColumnTemplate = 3
 
 scoreList = []
 currentCourseColumn = 11
 trackFailure = 0
 probation = []
 termination = []
+courseNameDb = []
+courseNameTemplate = []
 
-# iterate through worksheet and manipulate data
+# extract all course name from db and template
+
+for i in range(courseNumber):
+
+    dbCell = currentClass.cell(row=courseRowDb, column=courseColumnDb).value
+    courseNameDb.append(dbCell)
+
+    courseColumnDb += 1
+
+for i in range(courseNumber):
+
+    templateCell = templateWorksheet.cell(row=courseRowTemplate, column=courseColumnTemplate).value
+    courseNameTemplate.append(templateCell)
+
+    courseRowTemplate += 1
+                
+# iterate through templateWorksheet and manipulate data
 
 for _, row in data.iterrows():
 
@@ -248,8 +284,10 @@ for _, row in data.iterrows():
     for scores in score[:totalCourse]:
 
         scoreList.append(scores)
-    
+
     average = scoreList[averageValue]
+
+    # check for failures
 
     for scores in scoreList[:averageValue]:
 
@@ -263,15 +301,32 @@ for _, row in data.iterrows():
 
             pass
 
-        worksheet.cell(row=currentCourseColumn, column=4, value=scores)
+    # Create a dictionary to store the mapping of course names and their corresponding scores
+    course_score_mapping = dict(zip(courseNameDb, score[:totalCourse]))
 
+    # Iterate through the course names in the template
+    for coursesTemplate in courseNameTemplate:
+
+        # Check if the course name exists in the mapping
+        if coursesTemplate in course_score_mapping:
+
+            # Get the score from the mapping for the current course name
+            score_for_course = course_score_mapping[coursesTemplate]
+
+        else:
+
+            # If the course name is not found in the mapping, set the score to 'NA'
+            score_for_course = ' '
+        # Write the score to the corresponding cell in the template
+
+        templateWorksheet.cell(row=currentCourseColumn, column=4, value=score_for_course)
         currentCourseColumn += 1
 
     name = str(lastName) + " " + str(firstName) + " " + str(middleName)
 
-    worksheet.cell(row=6, column=3, value=name)
-    worksheet.cell(row=6, column=5, value=average)
-    worksheet.cell(row=4, column=5, value=className)
+    templateWorksheet.cell(row=6, column=3, value=name)
+    templateWorksheet.cell(row=6, column=5, value=average)
+    templateWorksheet.cell(row=4, column=5, value=className)
 
     # check number of failed courses
 
