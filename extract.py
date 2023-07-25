@@ -160,7 +160,7 @@ while True:
         
         if className not in classResult:
 
-            print("Class details not available in excel database\nKindly provide all necessary details again or update excel database")
+            print("\n" + className + " does not exist in excel database\nKindly provide correct class details or update excel database\n")
 
             os.execv(sys.executable, ['python'] + sys.argv)
 
@@ -198,9 +198,9 @@ while True:
                 
         while True:
 
-            courseNumber = int(input("Please input current number of courses for " + programe + " programe: "))
+            courseNumber = int(input("Please input current number of courses for " + className + " programe: "))
 
-            confirmSelection = input("Are you sure that there are now "+ str(courseNumber) + " courses for " + programe + " programme (y/n): ")
+            confirmSelection = input("Are you sure that there are "+ str(courseNumber) + " courses during " + className + " programme (y/n): ")
 
             if confirmSelection == "y" or confirmSelection == "Y":
 
