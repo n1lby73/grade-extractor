@@ -283,6 +283,20 @@ for _, row in data.iterrows():
     firstName = row.iloc[2]
     middleName = row.iloc[3]
     
+    # Check if any of the names is NaN, if yes, set them to empty strings
+
+    if pd.isna(firstName):
+
+        firstName = ""
+    
+    if pd.isna(middleName):
+    
+        middleName = ""
+    
+    if pd.isna(lastName):
+    
+        lastName = ""
+    
     score = row.iloc[5:].values
 
     score = pd.Series(score).fillna('NA').values
