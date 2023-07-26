@@ -191,232 +191,292 @@ while True:
         print("Please input a number\n")
 
 # Input current number of courses
-
-while True:
-
-    try:
-                
-        while True:
-
-            courseNumber = int(input("Please input current number of courses for " + className + " programe: "))
-
-            confirmSelection = input("Are you sure that there are "+ str(courseNumber) + " courses during " + className + " programme (y/n): ")
-
-            if confirmSelection == "y" or confirmSelection == "Y":
-
-                totalCourse = courseNumber + 1 #including column for average (count start from zero)
-
-                averageValue = courseNumber
-
-                break
-
-            elif confirmSelection == "n" or confirmSelection == "N":
-
-                print ("\nPlease input correct value\n")
-
-            else:
-
-                print ("wrong value entered")
-
-        break
-
-    except ValueError:
-
-        print("Please input a number\n")    
-
 # selected class that code is working on
 
 currentClass = resultDb[className]
 
-#course index for db
+# count number of courses 
 
-courseRowDb = 5
-courseColumnDb = 6
+# Specify the row number to start the count
 
-#course index for template
+row_number_to_search = 3
+trackEmptyCell = 0
+courseCount = 0
+startColumn = 0
 
-courseRowTemplate = 11
-courseColumnTemplate = 3
+# get first column that course count begins
 
-# number of student in class
+for cell in currentClass[row_number_to_search]:
 
-numberOfStudent = 24 # that is the maximum number of student in a class
+    cell_value = cell.value
 
-# other variable
+    if cell_value is not None:
+        
+        startColumn = cell.column
+        courseCount += 1
 
-scoreList = []
-currentCourseColumn = 11
-trackFailure = 0
-probation = []
-termination = []
-courseNameDb = []
-courseNameTemplate = []
+        break
+print (startColumn, courseCount)
+# start count to know how many courses
 
-#load work sheet        
+for cell in currentClass.iter_cols(min_col=startColumn, min_row=row_number_to_search, max_row=row_number_to_search):
+    cell_value = cell[0].value
+
+    if cell_value is not None:
+
+        courseCount += 1
+        trackEmptyCell = 0
+
+    else:
+
+        trackEmptyCell += 1
+
+        if trackEmptyCell == 2:
+        
+            break
+
+        # else:
+        #     courseCount += 1
+    #     trackEmptyCell += 1
+
+    #     if trackEmptyCell == 2:
+    #         courseCount -= 1
+    #         print ('broken')
+    #         break
+        
+    #     else:
+
+    #         courseCount += 1
+    #         print("here", courseCount)
+
+    
+    # else:
+
+    #     courseCount += 1
+    #     trackEmptyCell = 0
+    #     print("here2", courseCount)
+print (courseCount)
+# while True:
+
+#     try:
+                
+#         while True:
+
+#             courseNumber = int(input("Please input current number of courses for " + className + " programe: "))
+
+#             confirmSelection = input("Are you sure that there are "+ str(courseNumber) + " courses during " + className + " programme (y/n): ")
+
+#             if confirmSelection == "y" or confirmSelection == "Y":
+
+#                 totalCourse = courseNumber + 1 #including column for average (count start from zero)
+
+#                 averageValue = courseNumber
+
+#                 break
+
+#             elif confirmSelection == "n" or confirmSelection == "N":
+
+#                 print ("\nPlease input correct value\n")
+
+#             else:
+
+#                 print ("wrong value entered")
+
+#         break
+
+#     except ValueError:
+
+#         print("Please input a number\n")    
+
+# #course index for db
+
+# courseRowDb = 5
+# courseColumnDb = 6
+
+# #course index for template
+
+# courseRowTemplate = 11
+# courseColumnTemplate = 3
+
+# # number of student in class
+
+# numberOfStudent = 24 # that is the maximum number of student in a class
+
+# # other variable
+
+# scoreList = []
+# currentCourseColumn = 11
+# trackFailure = 0
+# probation = []
+# termination = []
+# courseNameDb = []
+# courseNameTemplate = []
+
+# #load work sheet        
 
 template = openpyxl.load_workbook(resultTemplate)
 templateWorksheet = template.worksheets[0]
 
-data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None, nrows=numberOfStudent)
+# data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None, nrows=numberOfStudent)
 
-# extract all course name from db and template
+# # extract all course name from db and template
 
-for i in range(courseNumber):
+# for i in range(courseNumber):
 
-    dbCell = currentClass.cell(row=courseRowDb, column=courseColumnDb).value
-    courseNameDb.append(dbCell)
+#     dbCell = currentClass.cell(row=courseRowDb, column=courseColumnDb).value
+#     courseNameDb.append(dbCell)
 
-    courseColumnDb += 1
+#     courseColumnDb += 1
 
-for i in range(courseNumber):
+# for i in range(courseNumber):
 
-    templateCell = templateWorksheet.cell(row=courseRowTemplate, column=courseColumnTemplate).value
-    courseNameTemplate.append(templateCell)
+#     templateCell = templateWorksheet.cell(row=courseRowTemplate, column=courseColumnTemplate).value
+#     courseNameTemplate.append(templateCell)
 
-    courseRowTemplate += 1
+#     courseRowTemplate += 1
                 
-# iterate through templateWorksheet and manipulate data
+# # iterate through templateWorksheet and manipulate data
 
-for _, row in data.iterrows():
+# for _, row in data.iterrows():
 
-    lastName = row.iloc[1]
-    firstName = row.iloc[2]
-    middleName = row.iloc[3]
+#     lastName = row.iloc[1]
+#     firstName = row.iloc[2]
+#     middleName = row.iloc[3]
     
-    # Check if any of the names is NaN, if yes, set them to empty strings
+#     # Check if any of the names is NaN, if yes, set them to empty strings
 
-    if pd.isna(firstName):
+#     if pd.isna(firstName):
 
-        firstName = ""
+#         firstName = ""
     
-    if pd.isna(middleName):
+#     if pd.isna(middleName):
     
-        middleName = ""
+#         middleName = ""
     
-    if pd.isna(lastName):
+#     if pd.isna(lastName):
     
-        lastName = ""
+#         lastName = ""
     
-    score = row.iloc[5:].values
+#     score = row.iloc[5:].values
 
-    score = pd.Series(score).fillna('NA').values
+#     score = pd.Series(score).fillna('NA').values
 
-    for scores in score[:totalCourse]:
+#     for scores in score[:totalCourse]:
 
-        scoreList.append(scores)
+#         scoreList.append(scores)
 
-    average = scoreList[averageValue]
+#     average = scoreList[averageValue]
 
-    # check for failures
+#     # check for failures
 
-    for scores in scoreList[:averageValue]:
+#     for scores in scoreList[:averageValue]:
 
-        try:
+#         try:
 
-            if int(scores) < 60:
+#             if int(scores) < 60:
 
-                trackFailure += 1
+#                 trackFailure += 1
         
-        except:
+#         except:
 
-            pass
+#             pass
 
-    # Create a dictionary to store the mapping of course names and their corresponding scores
-    course_score_mapping = dict(zip(courseNameDb, score[:totalCourse]))
+#     # Create a dictionary to store the mapping of course names and their corresponding scores
+#     course_score_mapping = dict(zip(courseNameDb, score[:totalCourse]))
 
-    # Iterate through the course names in the template
-    for coursesTemplate in courseNameTemplate:
+#     # Iterate through the course names in the template
+#     for coursesTemplate in courseNameTemplate:
 
-        # Check if the course name exists in the mapping
-        if coursesTemplate in course_score_mapping:
+#         # Check if the course name exists in the mapping
+#         if coursesTemplate in course_score_mapping:
 
-            # Get the score from the mapping for the current course name
-            score_for_course = course_score_mapping[coursesTemplate]
+#             # Get the score from the mapping for the current course name
+#             score_for_course = course_score_mapping[coursesTemplate]
 
-        else:
+#         else:
 
-            # If the course name is not found in the mapping, set the score to 'NA'
-            score_for_course = ' '
-        # Write the score to the corresponding cell in the template
+#             # If the course name is not found in the mapping, set the score to 'NA'
+#             score_for_course = ' '
+#         # Write the score to the corresponding cell in the template
 
-        templateWorksheet.cell(row=currentCourseColumn, column=4, value=score_for_course)
-        currentCourseColumn += 1
+#         templateWorksheet.cell(row=currentCourseColumn, column=4, value=score_for_course)
+#         currentCourseColumn += 1
 
-    name = str(lastName) + " " + str(firstName) + " " + str(middleName)
+#     name = str(lastName) + " " + str(firstName) + " " + str(middleName)
 
-    templateWorksheet.cell(row=6, column=3, value=name)
-    templateWorksheet.cell(row=6, column=5, value=average)
-    templateWorksheet.cell(row=4, column=5, value=className)
+#     templateWorksheet.cell(row=6, column=3, value=name)
+#     templateWorksheet.cell(row=6, column=5, value=average)
+#     templateWorksheet.cell(row=4, column=5, value=className)
 
-    # check number of failed courses
+#     # check number of failed courses
 
-    if trackFailure == 2:
+#     if trackFailure == 2:
 
-        probation.append(name)
+#         probation.append(name)
 
-    if trackFailure > 2:
+#     if trackFailure > 2:
 
-        termination.append(name)
+#         termination.append(name)
 
-    # clear variable memory
+#     # clear variable memory
 
-    trackFailure = 0
-    scoreList = []
-    currentCourseColumn = 11
+#     trackFailure = 0
+#     scoreList = []
+#     currentCourseColumn = 11
 
-    #save file
+#     #save file
 
-    try:
+#     try:
 
-        template.save('{}/{}.xlsx'.format(path,name))
+#         template.save('{}/{}.xlsx'.format(path,name))
     
-    except:
+#     except:
 
-        pass
+#         pass
 
-# loop to delete null report file created cause of incomplete class
+# # loop to delete null report file created cause of incomplete class
 
-for filename in os.listdir(path):
+# for filename in os.listdir(path):
         
-    if "nan" in filename:
+#     if "nan" in filename:
 
-        file_path = os.path.join(path, filename)
+#         file_path = os.path.join(path, filename)
 
-        os.remove(file_path)
+#         os.remove(file_path)
 
-# create file to store probation and termination list
+# # create file to store probation and termination list
 
-probationFile = open(className + " probation List.txt", "x")
-terminationFile = open(className + " termination List.txt", "x")
+# probationFile = open(className + " probation List.txt", "x")
+# terminationFile = open(className + " termination List.txt", "x")
 
-# generate student on probation
+# # generate student on probation
 
-for watchlist in probation:
+# for watchlist in probation:
     
-    probationFile.write(watchlist + '\n')
+#     probationFile.write(watchlist + '\n')
 
-# generate student on termination
+# # generate student on termination
 
-for watchlist in termination:
+# for watchlist in termination:
     
-    terminationFile.write(watchlist + '\n')
+#     terminationFile.write(watchlist + '\n')
 
-# Save and close files before sending
+# # Save and close files before sending
 
-probationFile.close()
-terminationFile.close()
+# probationFile.close()
+# terminationFile.close()
 
-# send generated data to telegram
+# # send generated data to telegram
 
-caption = "This is a TXT file containing list of student in {} due for probation".format(className)
+# caption = "This is a TXT file containing list of student in {} due for probation".format(className)
 
-sendToTelegram(className + " probation List.txt", caption)
+# sendToTelegram(className + " probation List.txt", caption)
 
-caption = "This is a TXT file containing list of student in {} due for termination".format(className)
+# caption = "This is a TXT file containing list of student in {} due for termination".format(className)
 
-sendToTelegram(className + " termination List.txt", caption)
+# sendToTelegram(className + " termination List.txt", caption)
 
-#delete file after sending
+# #delete file after sending
 
-os.remove(className + " termination List.txt")
-os.remove(className + " probation List.txt")
+# os.remove(className + " termination List.txt")
+# os.remove(className + " probation List.txt")
