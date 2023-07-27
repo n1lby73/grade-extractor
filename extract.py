@@ -191,42 +191,46 @@ while True:
         print("Please input a number\n")
 
 # Input current number of courses
-
-while True:
-
-    try:
-                
-        while True:
-
-            courseNumber = int(input("Please input current number of courses for " + className + " programe: "))
-
-            confirmSelection = input("Are you sure that there are "+ str(courseNumber) + " courses during " + className + " programme (y/n): ")
-
-            if confirmSelection == "y" or confirmSelection == "Y":
-
-                totalCourse = courseNumber + 1 #including column for average (count start from zero)
-
-                averageValue = courseNumber
-
-                break
-
-            elif confirmSelection == "n" or confirmSelection == "N":
-
-                print ("\nPlease input correct value\n")
-
-            else:
-
-                print ("wrong value entered")
-
-        break
-
-    except ValueError:
-
-        print("Please input a number\n")    
-
 # selected class that code is working on
 
 currentClass = resultDb[className]
+
+# count number of courses 
+
+# Specify the row number to start the count
+
+row_number_to_search = 3
+courseCounted = 0
+startColumn = 0
+
+# get first column that course count begins
+
+for cell in currentClass[row_number_to_search]:
+
+    cell_value = cell.value
+
+    if cell_value is not None:
+        
+        startColumn = cell.column
+
+        break
+
+# start count to know how many courses
+
+for cell in currentClass.iter_cols(min_col=startColumn, min_row=row_number_to_search, max_row=row_number_to_search):
+    
+    cell_value = cell[0].value
+
+    if cell_value != "AVERAGE":
+
+        courseCounted += 1
+
+    else:
+        
+        totalCourse = courseCounted + 1 # including column for average(count start from index zero)
+        averageValue = courseCounted
+
+        break
 
 #course index for db
 
@@ -261,14 +265,14 @@ data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None,
 
 # extract all course name from db and template
 
-for i in range(courseNumber):
+for i in range(courseCounted):
 
     dbCell = currentClass.cell(row=courseRowDb, column=courseColumnDb).value
     courseNameDb.append(dbCell)
 
     courseColumnDb += 1
 
-for i in range(courseNumber):
+for i in range(courseCounted):
 
     templateCell = templateWorksheet.cell(row=courseRowTemplate, column=courseColumnTemplate).value
     courseNameTemplate.append(templateCell)
