@@ -237,7 +237,7 @@ for cell in currentClass.iter_cols(min_col=startColumn, min_row=row_number_to_se
 # max number of student in class
 
 maxStudent = 24 # that is the maximum number of student in a class
-startRow = 7 # from main db names majorly starts from column 7
+startRow = 6 # from main db names majorly starts from column 7
 cellCount = 0
 startColumn = 1
 numberOfStudent = 0
@@ -428,6 +428,11 @@ for watchlist in termination:
 probationFile.close()
 terminationFile.close()
 
+# zip folder containing results
+
+shutil.make_archive(className + " generated result", 'zip', path)
+shutil.rmtree(path)
+
 # send generated data to telegram
 
 caption = "This is a TXT file containing list of student in {} due for probation".format(className)
@@ -438,7 +443,12 @@ caption = "This is a TXT file containing list of student in {} due for terminati
 
 sendToTelegram(className + " termination List.txt", caption)
 
+caption = "This is a zip file containing result for every student in {}".format(className)
+
+sendToTelegram(className + " generated result.zip", caption)
+
 #delete file after sending
 
+os.remove(className + " generated result.zip")
 os.remove(className + " termination List.txt")
 os.remove(className + " probation List.txt")
