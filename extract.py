@@ -218,6 +218,7 @@ for cell in currentClass[row_number_to_search]:
 # start count to know how many courses
 
 for cell in currentClass.iter_cols(min_col=startColumn, min_row=row_number_to_search, max_row=row_number_to_search):
+    
     cell_value = cell[0].value
 
     if cell_value != "AVERAGE":
@@ -231,37 +232,29 @@ for cell in currentClass.iter_cols(min_col=startColumn, min_row=row_number_to_se
 
         break
 
-# while True:
+# iteration to assign how many student are available while keeping max at 24
 
-#     try:
-                
-#         while True:
+# max number of student in class
 
-#             courseNumber = int(input("Please input current number of courses for " + className + " programe: "))
+maxStudent = 24 # that is the maximum number of student in a class
+startRow = 6 # from main db names majorly starts from column 7
+cellCount = 0
+startColumn = 1
+numberOfStudent = 0
 
-#             confirmSelection = input("Are you sure that there are "+ str(courseNumber) + " courses during " + className + " programme (y/n): ")
+for cell in currentClass.iter_rows(min_col=startColumn, min_row=startRow):
 
-#             if confirmSelection == "y" or confirmSelection == "Y":
+    cell_value = cell[0].value
 
-#                 totalCourse = courseNumber + 1 #including column for average (count start from zero)
+    if cell_value is not None and cellCount <= maxStudent:
+    
+        print (cell_value)
+        numberOfStudent += 1
+        cellCount += 1
+    
+    else:
 
-#                 averageValue = courseNumber
-
-#                 break
-
-#             elif confirmSelection == "n" or confirmSelection == "N":
-
-#                 print ("\nPlease input correct value\n")
-
-#             else:
-
-#                 print ("wrong value entered")
-
-#         break
-
-#     except ValueError:
-
-#         print("Please input a number\n")    
+        break
 
 #course index for db
 
@@ -272,10 +265,6 @@ courseColumnDb = 6
 
 courseRowTemplate = 11
 courseColumnTemplate = 3
-
-# number of student in class
-
-numberOfStudent = 24 # that is the maximum number of student in a class
 
 # other variable
 
@@ -292,7 +281,7 @@ courseNameTemplate = []
 template = openpyxl.load_workbook(resultTemplate)
 templateWorksheet = template.worksheets[0]
 
-data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None, nrows=numberOfStudent)
+data = pd.read_excel(resultSheet, sheet_name=className, skiprows=6, header=None, nrows=numberOfStudent) #skip rows is 6 because after that row student names which is the data we need starts counting
 
 # extract all course name from db and template
 
@@ -327,10 +316,8 @@ for _, row in data.iterrows():
     if pd.isna(middleName):
     
         middleName = ""
-    
-    if pd.isna(lastName):
-    
-        lastName = ""
+
+    # ommited last name(every individual would surely have a last name) to keep track of empty result that would be called nan
     
     score = row.iloc[5:].values
 
