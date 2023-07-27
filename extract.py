@@ -232,6 +232,30 @@ for cell in currentClass.iter_cols(min_col=startColumn, min_row=row_number_to_se
 
         break
 
+# iteration to assign how many student are available while keeping max at 24
+
+# max number of student in class
+
+maxStudent = 24 # that is the maximum number of student in a class
+startRow = 7 # from main db names majorly starts from column 7
+cellCount = 0
+startColumn = 1
+numberOfStudent = 0
+
+for cell in currentClass.iter_rows(min_col=startColumn, min_row=startRow):
+
+    cell_value = cell[0].value
+
+    if cell_value is not None and cellCount <= maxStudent:
+    
+        print (cell_value)
+        numberOfStudent += 1
+        cellCount += 1
+    
+    else:
+
+        break
+
 #course index for db
 
 courseRowDb = 5
@@ -241,10 +265,6 @@ courseColumnDb = 6
 
 courseRowTemplate = 11
 courseColumnTemplate = 3
-
-# number of student in class
-
-numberOfStudent = 24 # that is the maximum number of student in a class
 
 # other variable
 
@@ -261,7 +281,7 @@ courseNameTemplate = []
 template = openpyxl.load_workbook(resultTemplate)
 templateWorksheet = template.worksheets[0]
 
-data = pd.read_excel(resultSheet, sheet_name=className, skiprows=5, header=None, nrows=numberOfStudent)
+data = pd.read_excel(resultSheet, sheet_name=className, skiprows=6, header=None, nrows=numberOfStudent) #skip rows is 6 because after that row student names which is the data we need starts counting
 
 # extract all course name from db and template
 
@@ -296,10 +316,8 @@ for _, row in data.iterrows():
     if pd.isna(middleName):
     
         middleName = ""
-    
-    if pd.isna(lastName):
-    
-        lastName = ""
+
+    # ommited last name(every individual would surely have a last name) to keep track of empty result that would be called nan
     
     score = row.iloc[5:].values
 
