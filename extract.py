@@ -428,6 +428,11 @@ for watchlist in termination:
 probationFile.close()
 terminationFile.close()
 
+# zip folder containing results
+
+shutil.make_archive(className + " generated result", 'zip', path)
+shutil.rmtree(path)
+
 # send generated data to telegram
 
 caption = "This is a TXT file containing list of student in {} due for probation".format(className)
@@ -438,7 +443,13 @@ caption = "This is a TXT file containing list of student in {} due for terminati
 
 sendToTelegram(className + " termination List.txt", caption)
 
+caption = "This is a zip file containing result for every student in {}".format(className)
+
+sendToTelegram(className + " generated result.zip", caption)
+
 #delete file after sending
 
+os.remove(className + " generated result.zip")
 os.remove(className + " termination List.txt")
 os.remove(className + " probation List.txt")
+ 
