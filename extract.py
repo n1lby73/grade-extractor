@@ -71,7 +71,7 @@ def sendToTelegram(document, caption):
 
             apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
 
-            if document == 'TerminationList.txt':
+            if document == className + ' termination List.txt':
 
                 text = "No student in {} is due for termination".format(className)
 
@@ -237,7 +237,7 @@ for cell in currentClass.iter_cols(min_col=startColumn, min_row=row_number_to_se
 # max number of student in class
 
 maxStudent = 24 # that is the maximum number of student in a class
-startRow = 6 # from main db names majorly starts from column 7
+startRow = 7 # from main db names majorly starts from column 7
 cellCount = 0
 startColumn = 1
 numberOfStudent = 0
@@ -248,7 +248,6 @@ for cell in currentClass.iter_rows(min_col=startColumn, min_row=startRow):
 
     if cell_value is not None and cellCount <= maxStudent:
     
-        print (cell_value)
         numberOfStudent += 1
         cellCount += 1
     
