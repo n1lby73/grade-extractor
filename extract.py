@@ -111,7 +111,7 @@ def sendToTelegram(document, caption):
 
 #specify result sheet
 
-resultSheet = "emyety.xlsm"
+resultSheet = "emyety.xlsx"
 
 # allow user to select programe name
 
