@@ -32,4 +32,19 @@ class allClasses(Resource):
 
         return jsonify(allClasses=filteredClasses)
 
+
+class genResult(Resource):
+
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("className", required=True)
+
+    def post(self):
+
+        args = self.parser.parse_args()
+        className = args["className"]
+        
+
 api.add_resource(allClasses, '/api/v1/index', '/api/v1/index/')
+api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
