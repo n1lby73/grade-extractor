@@ -11,4 +11,4 @@ api = Api(app)
 mongo = PyMongo(app)
 jwt = JWTManager(app)
 
-from gradetractor import apiroutes
+from gradetractor import apiroute
