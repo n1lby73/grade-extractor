@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from flask_restful import Resource, reqparse
-from gradetractor import api, jwt, mongo
+from gradetractor import api, jwt, mongo, users_collection
 from flask import jsonify, request 
 import openpyxl
 
@@ -74,7 +74,7 @@ class reg(Resource):
         email = args["email"]
         password = args["password"]
 
-        users_collection = mongo.db.users
+        # users_collection = mongo.db.users
         users_collection.insert({'email':email, 'password':password})
 
 api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')

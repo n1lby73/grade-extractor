@@ -11,4 +11,6 @@ api = Api(app)
 mongo = PyMongo(app)
 jwt = JWTManager(app)
 
+users_collection = mongo.db.users
+
 from gradetractor import apiroute
