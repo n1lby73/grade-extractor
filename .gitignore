@@ -1,4 +1,7 @@
 iitenv/
 *.xlsx
+*.xlsx*
 *.xlsm
+*.xlsm*
 .env
+__pycache__
