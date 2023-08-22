@@ -77,7 +77,7 @@ class reg(Resource):
         users = mongo.db.users
         users.insert({'email':email, 'password':password})
 
-api.add_resource(login, '/api/v1/reg', '/api/v1/reg/')
+api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(login, '/api/v1/login', '/api/v1/login/')
 api.add_resource(allClasses, '/api/v1/index', '/api/v1/index/')
 api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
