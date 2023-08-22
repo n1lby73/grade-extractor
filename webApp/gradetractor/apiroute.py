@@ -7,7 +7,7 @@ import openpyxl
 resultSheet = "emyety.xlsx"
 
 class allClasses(Resource):
-
+    @jwt_required()
     def get(self):
 
         resultDb = openpyxl.load_workbook(resultSheet)
@@ -34,7 +34,7 @@ class allClasses(Resource):
 
 
 class genResult(Resource):
-
+    @jwt_required()
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
@@ -46,5 +46,21 @@ class genResult(Resource):
         className = args["className"]
         
 
+class login(Resource):
+
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("email", required=True)
+        self.parser.add_argument("password", required=True)
+    
+    def post(self):
+
+        args = self.parser.parse_args()
+        email = args["email"]
+        password = args["password"]
+
+
+api.add_resource(login, '/api/v1/login', '/api/v1/login/')
 api.add_resource(allClasses, '/api/v1/index', '/api/v1/index/')
 api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
