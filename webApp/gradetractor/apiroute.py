@@ -1,15 +1,17 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from flask_restful import Resource, reqparse
 from flask import jsonify, request, session
+from werkzeug.utils import secure_filename
 from gradetractor import api, jwt
 import openpyxl
-
+import os
+from gradetractor import app
 # resultSheet = "emyety.xlsx"
 
 # Custom validation function to check the file extension
 def allowed_file(filename):
 
-    ALLOWED_EXTENSIONS = ['.xlsx']
+    ALLOWED_EXTENSIONS = set(['.xlsx'])
     
     if "." in filename:
         
@@ -36,7 +38,7 @@ class results(Resource):
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('file',  required=True, type='FileStorage', location='files',  dest='files')
+        self.parser.add_argument('file',  required=True,  location='files',  dest='files')
         # self.parser.add_argument("resultdb", required=True)
 
     def post(self):
@@ -45,10 +47,11 @@ class results(Resource):
         uploaded_result = args['files']
 
         checkFileFormat = allowed_file(uploaded_result)
-        print (checkFileFormat)
+        # print (checkFileFormat)
         if checkFileFormat:
-
-            session['excelResultDb'] = checkFileFormat  # Store the files in the session
+            
+            uploaded_result.save(os.path.join(app.config['UPLOAD_FOLDER'],secure_filename(uploaded_result.filename)))
+            # session['excelResultDb'] = checkFileFormat  # Store the files in the session
             
             return {'message': 'uploaded successfully'}, 200
         
