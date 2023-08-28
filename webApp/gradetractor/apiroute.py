@@ -3,84 +3,40 @@ from flask_restful import Resource, reqparse
 from flask import jsonify, request, session
 from werkzeug.utils import secure_filename
 from gradetractor import api, jwt
+from gradetractor import app
 import openpyxl
 import os
-from gradetractor import app
+
 # resultSheet = "emyety.xlsx"
 
-# Custom validation function to check the file extension
-# def allowed_file(filename):
-
-#     ALLOWED_EXTENSIONS = set(['.xlsx'])
-    
-#     if "." in filename:
-        
-#         # Perform string formatting to retrieve only extension
-
-#         startIndex = filename.find(".")
-#         endIndex = filename.find("'", startIndex)
-      
-#         extension = filename[startIndex:endIndex]
-
-#         if extension in ALLOWED_EXTENSIONS:
-            
-#             # string formatting to extract file name 
-
-#             nameIndexStart = filename.find("'")
-#             nameIndexEnd = filename.find(".", nameIndexStart+1) # +1 to omit " ' "
-
-#             name = filename[nameIndexStart+1:nameIndexEnd]+extension
-#             # print (name)
-#             return name
 ALLOWED_EXTENSIONS = {'xlsx'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 class results(Resource):
-    # @jwt_required()
-
-    
-
-# Custom validation function to check the file extension
-        
-    # def __init__(self):
-
-    #     self.parser = reqparse.RequestParser()
-    #     self.parser.add_argument('file',  required=True, type='FileStorage', location='files',  dest='files')
-    #     # self.parser.add_argument("resultdb", required=True)
-        
+    # @jwt_required()        
     def post(self):
 
         # Check if the 'file' key exists in the request
         if 'file' not in request.files:
+
             return {'error': "No file part"}, 400
         
         file = request.files['file']
         
         # Check if the file is of allowed format
         if file and allowed_file(file.filename):
+
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
             return {'message': 'File uploaded successfully'}, 200
+        
         else:
+
             return {'error': "Wrong file format"}, 400
-        
-        # args = self.parser.parse_args()
-        
-        # uploaded_result = args['file']
-        
-        # checkFileFormat = allowed_file(uploaded_result)
-        # # print (checkFileFormat)
-        # if checkFileFormat:
-            
-        #     uploaded_result.save(os.path.join(app.config['UPLOAD_FOLDER'],secure_filename(uploaded_result.filename)))
-        #     # session['excelResultDb'] = checkFileFormat  # Store the files in the session
-            
-        #     return {'message': 'uploaded successfully'}, 200
-        
-        # return {'error': "wrong filetype"}, 406
 
 class allClasses(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self):
 
         resultSheet = session.get('excelResultDb')
