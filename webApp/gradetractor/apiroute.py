@@ -5,15 +5,17 @@ from werkzeug.utils import secure_filename
 from gradetractor import api, jwt
 from gradetractor import app
 import openpyxl
+import uuid
 import os
 
-# resultSheet = "emyety.xlsx"
-
 ALLOWED_EXTENSIONS = {'xlsx'}
+
 def allowed_file(filename):
+
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 class results(Resource):
-    # @jwt_required()        
+    @jwt_required()        
     def post(self):
 
         # Check if the 'file' key exists in the request
@@ -31,7 +33,12 @@ class results(Resource):
             # rename file
             filename = "result.xlsx"
 
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            uniqueId = str(uuid.uuid4())
+            os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'],uniqueId))
+
+            session["path"] = uniqueId
+
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], uniqueId, filename))
 
             return {'message': 'File uploaded successfully'}, 200
         
@@ -40,10 +47,15 @@ class results(Resource):
             return {'error': "Wrong file format"}, 400
 
 class allClasses(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self):
 
-        resultSheet = session.get('excelResultDb')
+        if not session.get("path"):
+
+            return {'error': 'excel database containing all classes has not been uploaded'}, 404
+        
+        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), 'result.xlsx')
+
         resultDb = openpyxl.load_workbook(resultSheet)
         classes = resultDb.sheetnames
         print (classes)
