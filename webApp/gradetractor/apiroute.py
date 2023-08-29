@@ -45,6 +45,39 @@ class results(Resource):
         else:
 
             return {'error': "Wrong file format"}, 400
+        
+class templates(Resource):
+    @jwt_required()        
+    def post(self):
+
+        if not session.get("path"):
+
+            return {'error': 'excel database containing all classes has not been uploaded'}, 404
+        
+        # Check if the 'file' key exists in the request
+        if 'file' not in request.files:
+
+            return {'error': "No file part"}, 400
+        
+        file = request.files['file']
+        
+        # Check if the file is of allowed format
+        if file and allowed_file(file.filename):
+
+            filename = secure_filename(file.filename)
+
+            # rename file
+            filename = "template.xlsx"
+
+            path = session.get("path")
+
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], path, filename))
+
+            return {'message': 'File uploaded successfully'}, 200
+        
+        else:
+
+            return {'error': "Wrong file format"}, 400
 
 class allClasses(Resource):
     @jwt_required()
@@ -128,4 +161,5 @@ api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(login, '/api/v1/login', '/api/v1/login/')
 api.add_resource(results, '/api/v1/result', '/api/v1/result/')
 api.add_resource(allClasses, '/api/v1/index', '/api/v1/index/')
+api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
 api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
