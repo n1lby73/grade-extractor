@@ -27,6 +27,10 @@ class results(Resource):
         if file and allowed_file(file.filename):
 
             filename = secure_filename(file.filename)
+
+            # rename file
+            filename = "result.xlsx"
+
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             return {'message': 'File uploaded successfully'}, 200
