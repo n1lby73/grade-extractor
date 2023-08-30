@@ -133,7 +133,7 @@ class genResult(Resource):
 
         resultDb = openpyxl.load_workbook(resultSheet)
 
-        parentPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className)
+        parentPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className+" report")
         subPath = os.path.join(parentPath, "individual Result")
 
         os.makedirs(parentPath, exist_ok=True)
