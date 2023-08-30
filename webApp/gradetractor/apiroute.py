@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
+from flask import jsonify, request, session,send_file
 from flask_restful import Resource, reqparse
-from flask import jsonify, request, session
 from werkzeug.utils import secure_filename
 from gradetractor import api, jwt
 from gradetractor import app
@@ -384,8 +384,8 @@ class genResult(Resource):
 
         # zip folder containing results
 
-        # shutil.make_archive(className + " generated result", 'zip', path)
-        # shutil.rmtree(path)
+        resultPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className + " generated result")
+        zippedResultPath = shutil.make_archive(resultPath, 'zip', parentPath)
 
         # # send generated data to telegram
 
@@ -407,6 +407,7 @@ class genResult(Resource):
         # # os.remove(className + " termination List.txt")
         # # os.remove(className + " probation List.txt")
         
+        return send_file(zippedResultPath, as_attachment=True)
 
 class login(Resource):
 
