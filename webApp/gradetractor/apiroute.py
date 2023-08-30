@@ -387,26 +387,6 @@ class genResult(Resource):
         resultPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className + " generated result")
         zippedResultPath = shutil.make_archive(resultPath, 'zip', parentPath)
 
-        # # send generated data to telegram
-
-        # # caption = "This is a TXT file containing list of student in {} due for probation".format(className)
-
-        # # sendToTelegram(className + " probation List.txt", caption)
-
-        # # caption = "This is a TXT file containing list of student in {} due for termination".format(className)
-
-        # # sendToTelegram(className + " termination List.txt", caption)
-
-        # # caption = "This is a zip file containing result for every student in {}".format(className)
-
-        # # sendToTelegram(className + " generated result.zip", caption)
-
-        # #delete file after sending
-
-        # # os.remove(className + " generated result.zip")
-        # # os.remove(className + " termination List.txt")
-        # # os.remove(className + " probation List.txt")
-        
         return send_file(zippedResultPath, as_attachment=True)
 
 class login(Resource):
