@@ -362,8 +362,8 @@ class genResult(Resource):
         probationFilePath = os.path.join(parentPath, className + " Probation List.txt")
         terminationFilePath = os.path.join(parentPath, className + " Termination List.txt")
 
-        probationFile = open(probationFilePath, "x")
-        terminationFile = open(terminationFilePath, "x")
+        probationFile = open(probationFilePath, "w")
+        terminationFile = open(terminationFilePath, "w")
 
         # generate student on probation
 
