@@ -82,7 +82,7 @@ class templates(Resource):
             return {'error': "Wrong file format"}, 400
 
 class allClasses(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self):
 
         if not session.get("path"):
@@ -93,7 +93,6 @@ class allClasses(Resource):
 
         resultDb = openpyxl.load_workbook(resultSheet)
         classes = resultDb.sheetnames
-        print (classes)
 
         filteredClasses = []
         unwantedWorkbook = []
@@ -134,9 +133,11 @@ class genResult(Resource):
 
         resultDb = openpyxl.load_workbook(resultSheet)
 
-        path = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className+" individual result")
+        parentPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className)
+        subPath = os.path.join(parentPath, "individual Result")
 
-        os.makedirs(path, exist_ok=True)
+        os.makedirs(parentPath, exist_ok=True)
+        os.makedirs(subPath, exist_ok=True)
 
         # Input current number of courses
         # selected class that code is working on
@@ -185,7 +186,7 @@ class genResult(Resource):
         # max number of student in class
 
         maxStudent = 24 # that is the maximum number of student in a class
-        startRow = 7 # from main db names majorly starts from column 7
+        startRow = 7 # from main db, names majorly starts from column 7
         cellCount = 0
         startColumn = 1
         numberOfStudent = 0
@@ -340,7 +341,7 @@ class genResult(Resource):
 
             try:
             
-                template.save('{}/{}.xlsx'.format(path,name))
+                template.save('{}/{}.xlsx'.format(subPath,name))
 
             except:
             
@@ -348,18 +349,21 @@ class genResult(Resource):
             
         # loop to delete null report file created cause of incomplete class
 
-        for filename in os.listdir(path):
+        for filename in os.listdir(subPath):
 
             if "nan" in filename:
             
-                file_path = os.path.join(path, filename)
+                file_path = os.path.join(subPath, filename)
 
                 os.remove(file_path)
 
         # create file to store probation and termination list
 
-        probationFile = open(className + " probation List.txt", "x")
-        terminationFile = open(className + " termination List.txt", "x")
+        probationFilePath = os.path.join(parentPath, className + " Probation List.txt")
+        terminationFilePath = os.path.join(parentPath, className + " Termination List.txt")
+
+        probationFile = open(probationFilePath, "x")
+        terminationFile = open(terminationFilePath, "x")
 
         # generate student on probation
 
