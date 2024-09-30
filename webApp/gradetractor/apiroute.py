@@ -2,7 +2,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from flask import jsonify, request, session,send_file
 from flask_restful import Resource, reqparse
 from werkzeug.utils import secure_filename
-from gradetractor import api, jwt
+from gradetractor import api, jwt, mongo
 from gradetractor import app
 import pandas as pd
 import openpyxl
@@ -416,10 +416,28 @@ class reg(Resource):
         args = self.parser.parse_args()
         email = args["email"]
         password = args["password"]
+        print (email)
+        print (password)
 
+        # # userData = mongo.db.users
+        # try:
+        #     userData = mongo.db.users
+        # # ... rest of your code ...
+        # except Exception as e:
+        #     return jsonify({'error': str(e)}), 500
+
+        data = {'email':email, 'password':password}
+        result = mongo.db.users.insert_one(data)
+        # new_user = {'email': email, 'password': password}
+        # mongo.db.users.insert_one(new_user)
         # users_collection = db.usersfhg
         # users_collection.insert({'email':email, 'password':password})
-        # db.users.insert_one({'email':email, 'password':password})
+        # mongo.db.users.insert_one({'email':email, 'password':password})
+
+        if result.inserted_id:
+            return jsonify({'message': 'Data inserted successfully', 'inserted_id': str(result.inserted_id)}), 201
+        else:
+            return jsonify({'error': 'Failed to insert data'}), 500
 
 api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(login, '/api/v1/login', '/api/v1/login/')
