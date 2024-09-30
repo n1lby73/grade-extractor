@@ -59,7 +59,7 @@ class templates(Resource):
         # Check if the 'file' key exists in the request
         if 'file' not in request.files:
 
-            return {'error': "No file part"}, 400
+            return {'error': "No file path"}, 400
         
         file = request.files['file']
         
