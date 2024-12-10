@@ -11,10 +11,10 @@ from gradetractor import config
 
 api = Api(app)
 mongo = PyMongo(app)
-# db = mongodb.db
+db = mongo.db
 jwt = JWTManager(app)
 CORS(app, cors_allowed_origin=['http://127.0.0.1:5000/api/v1/result'])
 
-# users_collection = mongo.db.users
+users_collection = db.users
 
 from gradetractor import apiroute
