@@ -400,11 +400,15 @@ class login(Resource):
     def post(self):
 
         args = self.parser.parse_args()
-        email = args["email"]
+        email = args["email"].lower()
         password = args["password"]
 
+        checkUser = db.users.find_one({"email":email})
 
+        if not checkUser or not check_password_hash(checkUser.get("password"), password):
 
+            return ({"Error":"Email or password is incorrect"})
+        
 class reg(Resource):
 
     def __init__(self):
