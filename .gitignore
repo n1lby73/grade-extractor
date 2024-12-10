@@ -4,3 +4,4 @@
 *.xlsm*
 .env
 __pycache__
+gradeEnv
