@@ -420,7 +420,7 @@ class reg(Resource):
     def post(self):
 
         args = self.parser.parse_args()
-        email = args["email"]
+        email = args["email"].lower()
         password = args["password"]
 
         checkExistingMail = db.users.find_one({"email":email})
