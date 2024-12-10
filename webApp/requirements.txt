@@ -1,7 +1,8 @@
 argcomplete==3.5.2
 beautifulsoup4==4.12.3
 blivet==3.10.0
-blivet-gui==2.6.0
+# blivet-gui==2.6.0
+blivet-gui
 boto3==1.35.76
 botocore==1.35.76
 Brlapi==0.8.5
