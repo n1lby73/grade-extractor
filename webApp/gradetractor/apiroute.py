@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, create_refresh_token, set_access_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, session,send_file
 from flask_restful import Resource, reqparse
@@ -15,6 +15,14 @@ ALLOWED_EXTENSIONS = {'xlsx'}
 def allowed_file(filename):
 
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@jwt.expired_token_loader
+def my_expired_token_callback(jwt_header, jwt_payload):
+    return ({"message": "expired token"}), 401
+
+@jwt.invalid_token_loader
+def handle_invalid(error):
+    return ({"message": "invalid token", "error":error}), 401
 
 class results(Resource):
     @jwt_required()        
@@ -408,6 +416,27 @@ class login(Resource):
         if not checkUser or not check_password_hash(checkUser.get("password"), password):
 
             return ({"Error":"Email or password is incorrect"})
+        
+
+        #To retrive the email use sub as the key for the query
+
+        refresh_token = create_refresh_token(identity=email)
+        access_token = create_access_token(identity=email, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
+
+        response = jsonify(
+
+                {
+                    "success": "login successful",
+                    "token":{
+                        "access_token":access_token, "refresh_token":refresh_token
+                    }
+                }
+                
+            )
+
+        set_access_cookies(response, access_token)
+            
+        return response
         
 class reg(Resource):
 
