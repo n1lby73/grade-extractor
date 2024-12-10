@@ -1,4 +1,5 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, session,send_file
 from flask_restful import Resource, reqparse
 from werkzeug.utils import secure_filename
@@ -402,6 +403,8 @@ class login(Resource):
         email = args["email"]
         password = args["password"]
 
+
+
 class reg(Resource):
 
     def __init__(self):
@@ -415,32 +418,25 @@ class reg(Resource):
         args = self.parser.parse_args()
         email = args["email"]
         password = args["password"]
-        print (email)
-        print (password)
 
-        # # userData = mongo.db.users
-        # try:
-        #     userData = mongo.db.users
-        # # ... rest of your code ...
-        # except Exception as e:
-        #     return jsonify({'error': str(e)}), 500
+        checkExistingMail = db.users.find_one({"email":email})
 
-        data = {'email':email, 'password':password}
+        if checkExistingMail:
+
+            return ({"Error":"Mail already exist"})
+        
+        hashedPass = generate_password_hash(password)
+
+        data = {'email':email, 'password':hashedPass}
         result = db.users.insert_one(data)
-        print (result.inserted_id)
-        # new_user = {'email': email, 'password': password}
-        # mongo.db.users.insert_one(new_user)
-        # users_collection = db.usersfhg
-        # users_collection.insert({'email':email, 'password':password})
-        # mongo.db.users.insert_one({'email':email, 'password':password})
 
         if result.inserted_id:
-            return jsonify({"message":"Data installed successfully"})
-            # return jsonify ('message', 'Data inserted successfully', 'inserted_id', str(result.inserted_id)), 201
-        #     # return ("me")
+            
+            return ({"message":"Data inserted successfully", "inserted_id":str(result.inserted_id)}), 201
+        
         else:
 
-            return jsonify('error', 'Failed to inseroooooooooot data'), 500
+            return jsonify('error', 'Failed to insert data'), 500
 
 api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(login, '/api/v1/login', '/api/v1/login/')
