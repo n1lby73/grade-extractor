@@ -44,9 +44,10 @@ class results(Resource):
             filename = "result.xlsx"
 
             uniqueId = str(uuid.uuid4())
+
             os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'],uniqueId))
 
-            session["path"] = uniqueId
+            session["resultDbPath"] = uniqueId
 
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], uniqueId, filename))
 
