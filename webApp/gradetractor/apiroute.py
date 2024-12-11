@@ -61,7 +61,7 @@ class templates(Resource):
     @jwt_required()        
     def post(self):
 
-        if not session.get("path"):
+        if not session.get("resultDbPath"):
 
             return {'error': 'excel database containing all classes has not been uploaded'}, 404
         
@@ -80,7 +80,7 @@ class templates(Resource):
             # rename file
             filename = "template.xlsx"
 
-            path = session.get("path")
+            path = session.get("resultDbPath")
 
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], path, filename))
 
@@ -137,7 +137,7 @@ class genResult(Resource):
         if not session.get("path"):
 
             return {"error":"excel db and template not uploaded"}, 400
-        
+                
         resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), 'result.xlsx')
 
         resultDb = openpyxl.load_workbook(resultSheet)
