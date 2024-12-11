@@ -123,7 +123,7 @@ class allClasses(Resource):
 
 
 class genResult(Resource):
-    # @jwt_required()
+    @jwt_required()
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
@@ -134,15 +134,15 @@ class genResult(Resource):
         args = self.parser.parse_args()
         className = args["className"]
 
-        if not session.get("path"):
+        if not session.get("resultDbPath"):
 
             return {"error":"excel db and template not uploaded"}, 400
                 
-        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), 'result.xlsx')
+        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
         resultDb = openpyxl.load_workbook(resultSheet)
 
-        parentPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className+" report")
+        parentPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), className+" report")
         subPath = os.path.join(parentPath, "individual Result")
 
         os.makedirs(parentPath, exist_ok=True)
@@ -235,8 +235,8 @@ class genResult(Resource):
 
         #load work sheet        
 
-        resultTemplate = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), 'template.xlsx')
-        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), 'result.xlsx')
+        resultTemplate = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'template.xlsx')
+        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
         template = openpyxl.load_workbook(resultTemplate)
         templateWorksheet = template.worksheets[0]
@@ -393,7 +393,7 @@ class genResult(Resource):
 
         # zip folder containing results
 
-        resultPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), className + " generated result")
+        resultPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), className + " generated result")
         zippedResultPath = shutil.make_archive(resultPath, 'zip', parentPath)
 
         return send_file(zippedResultPath, as_attachment=True)
