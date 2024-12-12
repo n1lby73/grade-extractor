@@ -173,7 +173,20 @@ class genResult(Resource):
 
         #Get all available classes from the allClasses endpoint
         all_classes_url = f"{request.host_url}/api/v1/index"
-        response = requests.get(all_classes_url)
+
+        #Extract authorization token to use in making the request
+        token = request.headers['Authorization'].split(' ')[1]
+
+        # Include the session cookie in the request
+        cookies = request.cookies
+
+        headers = {
+
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.get(all_classes_url, headers=headers, cookies=cookies)
         
         if response.status_code != 200:
             return {"response":response.text}, 500
@@ -183,7 +196,8 @@ class genResult(Resource):
 
         # Validate if the requested class exists in the available classes
         if className not in available_classes:
-            return {"error": f"Class '{className}' does not exist in the database."}, 404
+            
+            return {"error": f"Class '{className}' does not exist in the excel database."}, 404
                 
         resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
