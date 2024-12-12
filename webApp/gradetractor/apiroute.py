@@ -98,9 +98,9 @@ class allClasses(Resource):
 
             return {'error': 'excel database containing all classes has not been uploaded'}, 404
         
-        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
+        resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
-        resultDb = openpyxl.load_workbook(resultSheet)
+        resultDb = openpyxl.load_workbook(resultSheetPath)
         classes = resultDb.sheetnames
 
         filteredClasses = []
@@ -138,9 +138,9 @@ class genResult(Resource):
 
             return {"error":"excel db and template not uploaded"}, 400
                 
-        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
+        resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
-        resultDb = openpyxl.load_workbook(resultSheet)
+        resultDb = openpyxl.load_workbook(resultSheetPath)
 
         parentPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), className+" report")
         subPath = os.path.join(parentPath, "individual Result")
@@ -236,12 +236,12 @@ class genResult(Resource):
         #load work sheet        
 
         resultTemplate = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'template.xlsx')
-        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
+        resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
         template = openpyxl.load_workbook(resultTemplate)
         templateWorksheet = template.worksheets[0]
 
-        data = pd.read_excel(resultSheet, sheet_name=className, skiprows=6, header=None, nrows=numberOfStudent) #skip rows is 6 because after that row student names which is the data we need starts counting
+        data = pd.read_excel(resultSheetPath, sheet_name=className, skiprows=6, header=None, nrows=numberOfStudent) #skip rows is 6 because after that row student names which is the data we need starts counting
 
         # extract all course name from db and template
 
