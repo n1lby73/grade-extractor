@@ -15,49 +15,23 @@ def allowed_file(filename):
 
 def validateNumberOfFiles(path): #function to be used as a wrapper to confirm if both template and db excel fiile has been uploaded
 
-    #Decorator to check if both 'result.xlsx' and 'templates.xlsx' files exist.
+    path = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath')) #root path for expcted uploaded document
 
-    # def wrapper(self, *args, **kwargs):
-        # get the path to the uploaded files
+    totalFiles = [files for files in os.listdir(path) if os.path.isfile(os.path.join(path,files))] #list all the files in the directory
 
-        # if not session.get("resultDbPath") == None:
-        # if "resultDbPath" in session:
+    expectedFiles= ["result.xlsx", "template.xlsx"]
 
-        #     return {'error': 'Excel database containing all data has not been uploaded'}, 404
+    missingFile = [file for file in expectedFiles if file not in totalFiles] #iterate through to check if files to be worked with are present
+
+    if "template.xlsx" in missingFile:
+
+        return {"error": 'result template has not been uploaded'}, 404
         
-        print ("pass")
-        path = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
+    if "result.xlsx" in missingFile:
 
-        totalFiles = [files for files in os.listdir(path) if os.path.isfile(os.path.join(path,files))]
-        expectedFiles= ["result.xlsx", "template.xlsx"]
+        return {"error": 'excel results datasheet has not been uploaded'}, 404
 
-        # if len(totalFiles) != 2:
-
-        missingFile = [file for file in expectedFiles if file not in totalFiles]
-        print(missingFile)
-        if "template.xlsx" in missingFile:
-
-            return {"error": 'result template has not been uploaded'}, 404
-            
-        if "result.xlsx" in missingFile:
-
-            return {"error": 'excel results datasheet has not been uploaded'}, 404
-
-            # for files in expectedFiles:
-
-            #     if files not in totalFiles:
-
-            #         if files == "template.xlsx":
-
-            #             return {"error": 'result template has not been uploaded'}, 404
-                    
-            #         else:
-                        
-            #             return {"error": 'excel results datasheet has not been uploaded'}, 404
-
-        # return func(self, *args, **kwargs)
-        return True
-    # return wrapper
+    return True
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
@@ -141,6 +115,7 @@ class allClasses(Resource):
 
             return {'error': 'excel database containing all classes has not been uploaded'}, 404
         
+        #confirm that all needed file are readily available
         parentPathForFiles = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
         
         validator = validateNumberOfFiles(parentPathForFiles)
@@ -189,8 +164,13 @@ class genResult(Resource):
             return {"error":"excel db and template not uploaded"}, 400
         
         parentPathForFiles = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
-        validateNumberOfFiles(parentPathForFiles)
+        
+        validator = validateNumberOfFiles(parentPathForFiles)
 
+        if validator != True:
+
+            return validator
+        
         #Get all available classes from the allClasses endpoint
         all_classes_url = f"{request.host_url}/api/v1/index"
 
