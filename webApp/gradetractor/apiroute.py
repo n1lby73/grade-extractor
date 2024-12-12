@@ -134,6 +134,20 @@ class genResult(Resource):
         if not session.get("resultDbPath"):
 
             return {"error":"excel db and template not uploaded"}, 400
+
+        #Get all available classes from the allClasses endpoint
+        all_classes_url = f"{request.host_url}/api/v1/index"
+        response = requests.get(all_classes_url)
+        
+        if response.status_code != 200:
+            return {"response":response.text}, 500
+        
+        # Parse the available classes from the response
+        available_classes = response.json().get('allClasses', [])
+
+        # Validate if the requested class exists in the available classes
+        if className not in available_classes:
+            return {"error": f"Class '{className}' does not exist in the database."}, 404
                 
         resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
