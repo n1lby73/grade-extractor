@@ -2,13 +2,10 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, session,send_file
 from flask_restful import Resource, reqparse
+import openpyxl, shutil, uuid, os, requests
 from werkzeug.utils import secure_filename
 from gradetractor import api, jwt, db, app
 import pandas as pd
-import openpyxl
-import shutil
-import uuid
-import os
 
 ALLOWED_EXTENSIONS = {'xlsx'}
 
