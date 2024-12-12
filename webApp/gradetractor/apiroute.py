@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, create_refresh_token, set_access_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import jsonify, request, session,send_file
+from flask import jsonify, request, session,send_file, after_this_request
 from flask_restful import Resource, reqparse
 import openpyxl, shutil, uuid, os, requests
 from werkzeug.utils import secure_filename
@@ -13,39 +13,51 @@ def allowed_file(filename):
 
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def validateNumberOfFiles(func): #function to be used as a wrapper to confirm if both template and db excel fiile has been uploaded
+def validateNumberOfFiles(path): #function to be used as a wrapper to confirm if both template and db excel fiile has been uploaded
 
     #Decorator to check if both 'result.xlsx' and 'templates.xlsx' files exist.
 
-    def wrapper(self, *args, **kwargs):
+    # def wrapper(self, *args, **kwargs):
         # get the path to the uploaded files
 
-        if not session.get("resultDbPath"):
+        # if not session.get("resultDbPath") == None:
+        # if "resultDbPath" in session:
 
-            return {'error': 'Excel database containing all data has not been uploaded'}, 404
+        #     return {'error': 'Excel database containing all data has not been uploaded'}, 404
         
+        print ("pass")
         path = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
 
         totalFiles = [files for files in os.listdir(path) if os.path.isfile(os.path.join(path,files))]
         expectedFiles= ["result.xlsx", "template.xlsx"]
 
-        if len(totalFiles) != 2:
+        # if len(totalFiles) != 2:
 
-            for files in expectedFiles:
+        missingFile = [file for file in expectedFiles if file not in totalFiles]
+        print(missingFile)
+        if "template.xlsx" in missingFile:
 
-                if files not in totalFiles:
+            return {"error": 'result template has not been uploaded'}, 404
+            
+        if "result.xlsx" in missingFile:
 
-                    if files == "template.xlsx":
+            return {"error": 'excel results datasheet has not been uploaded'}, 404
 
-                        return {"error": 'result template has not been uploaded'}, 404
+            # for files in expectedFiles:
+
+            #     if files not in totalFiles:
+
+            #         if files == "template.xlsx":
+
+            #             return {"error": 'result template has not been uploaded'}, 404
                     
-                    else:
+            #         else:
                         
-                        return {"error": 'excel results datasheet has not been uploaded'}, 404
+            #             return {"error": 'excel results datasheet has not been uploaded'}, 404
 
-        return func(self, *args, **kwargs)
-    
-    return wrapper
+        # return func(self, *args, **kwargs)
+        return True
+    # return wrapper
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
@@ -123,13 +135,20 @@ class templates(Resource):
 
 class allClasses(Resource):
     @jwt_required()
-    @validateNumberOfFiles 
     def get(self):
 
         if not session.get("resultDbPath"):
 
             return {'error': 'excel database containing all classes has not been uploaded'}, 404
         
+        parentPathForFiles = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
+        
+        validator = validateNumberOfFiles(parentPathForFiles)
+
+        if validator != True:
+
+            return validator
+
         resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
         resultDb = openpyxl.load_workbook(resultSheetPath)
@@ -153,10 +172,8 @@ class allClasses(Resource):
 
         return jsonify(allClasses=filteredClasses)
 
-
 class genResult(Resource):
     @jwt_required()
-    @validateNumberOfFiles 
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
@@ -170,6 +187,9 @@ class genResult(Resource):
         if not session.get("resultDbPath"):
 
             return {"error":"excel db and template not uploaded"}, 400
+        
+        parentPathForFiles = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
+        validateNumberOfFiles(parentPathForFiles)
 
         #Get all available classes from the allClasses endpoint
         all_classes_url = f"{request.host_url}/api/v1/index"
@@ -456,6 +476,13 @@ class genResult(Resource):
 
         resultPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), className + " generated result")
         zippedResultPath = shutil.make_archive(resultPath, 'zip', parentPath)
+
+        @after_this_request
+        def deleteAllFiles(response):
+            # os.remove(os.path(session.get()))
+            shutil.rmtree(app.config['UPLOAD_FOLDER'])
+            session.pop("resultDbPath", None)
+            return response
 
         return send_file(zippedResultPath, as_attachment=True, mimetype='application/zip')
 
