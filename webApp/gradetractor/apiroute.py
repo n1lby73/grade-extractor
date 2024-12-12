@@ -13,6 +13,40 @@ def allowed_file(filename):
 
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def validateNumberOfFiles(func): #function to be used as a wrapper to confirm if both template and db excel fiile has been uploaded
+
+    #Decorator to check if both 'result.xlsx' and 'templates.xlsx' files exist.
+
+    def wrapper(self, *args, **kwargs):
+        # get the path to the uploaded files
+
+        if not session.get("resultDbPath"):
+
+            return {'error': 'Excel database containing all data has not been uploaded'}, 404
+        
+        path = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
+
+        totalFiles = [files for files in os.listdir(path) if os.path.isfile(os.path.join(path,files))]
+        expectedFiles= ["result.xlsx", "template.xlsx"]
+
+        if len(totalFiles) != 2:
+
+            for files in expectedFiles:
+
+                if files not in totalFiles:
+
+                    if files == "template.xlsx":
+
+                        return {"error": 'result template has not been uploaded'}, 404
+                    
+                    else:
+                        
+                        return {"error": 'excel results datasheet has not been uploaded'}, 404
+
+        return func(self, *args, **kwargs)
+    
+    return wrapper
+
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
     return ({"message": "expired token"}), 401
@@ -89,6 +123,7 @@ class templates(Resource):
 
 class allClasses(Resource):
     @jwt_required()
+    @validateNumberOfFiles 
     def get(self):
 
         if not session.get("resultDbPath"):
@@ -121,6 +156,7 @@ class allClasses(Resource):
 
 class genResult(Resource):
     @jwt_required()
+    @validateNumberOfFiles 
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
