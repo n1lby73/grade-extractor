@@ -196,7 +196,7 @@ class genResult(Resource):
 
         # Validate if the requested class exists in the available classes
         if className not in available_classes:
-            
+
             return {"error": f"Class '{className}' does not exist in the excel database."}, 404
                 
         resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
@@ -387,9 +387,9 @@ class genResult(Resource):
 
             name = str(lastName) + " " + str(firstName) + " " + str(middleName)
 
-            templateWorksheet.cell(row=6, column=3, value=name)
-            templateWorksheet.cell(row=6, column=5, value=average)
-            templateWorksheet.cell(row=4, column=5, value=className)
+            templateWorksheet.cell(row=7, column=3, value=name)
+            templateWorksheet.cell(row=7, column=5, value=average)
+            templateWorksheet.cell(row=5, column=5, value=className)
 
             # check number of failed courses
 
