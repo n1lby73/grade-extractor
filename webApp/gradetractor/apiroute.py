@@ -91,14 +91,14 @@ class templates(Resource):
             return {'error': "Wrong file format"}, 400
 
 class allClasses(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self):
 
-        if not session.get("path"):
+        if not session.get("resultDbPath"):
 
             return {'error': 'excel database containing all classes has not been uploaded'}, 404
         
-        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('path'), 'result.xlsx')
+        resultSheet = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
         resultDb = openpyxl.load_workbook(resultSheet)
         classes = resultDb.sheetnames
@@ -396,7 +396,7 @@ class genResult(Resource):
         resultPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), className + " generated result")
         zippedResultPath = shutil.make_archive(resultPath, 'zip', parentPath)
 
-        return send_file(zippedResultPath, as_attachment=True)
+        return send_file(zippedResultPath, as_attachment=True, mimetype='application/zip')
 
 class login(Resource):
 
