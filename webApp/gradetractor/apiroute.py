@@ -459,7 +459,7 @@ class genResult(Resource):
 
         @after_this_request
         def deleteAllFiles(response):
-            # os.remove(os.path(session.get()))
+            
             shutil.rmtree(app.config['UPLOAD_FOLDER'])
             session.pop("resultDbPath", None)
             return response
