@@ -40,27 +40,28 @@ To interact with the API, follow these steps:
 -  User Authentication:
     -    Register or log in to the system to receive an authentication token.
 
-    - Upload Results Database:
-        - Upload the student results file (result.xlsx) that contains student grades.
+- Upload Results Database:
+    - Upload the student results file (result.xlsx) that contains student grades.
 
-    - Upload Template:
-        - Upload the report template file (template.xlsx), which is used to generate individual student reports.
+- Upload Template:
+    - Upload the report template file (template.xlsx), which is used to generate individual student reports.
 
-    - Generate Reports:
-        - Once the results and template are uploaded, select a class and generate individual student reports. These reports include details about probation or termination status based on student performance.
+- Generate Reports:
+    - Once the results and template are uploaded, select a class and generate individual student reports. These reports include details about probation or termination status based on student performance.
 
-    -
+## API Documentation
 
-API Documentation
-
-For full API endpoint details, including request bodies, responses, and authentication instructions, please refer to the [API Documentation]().
+For full API endpoint details, including request bodies, responses, and authentication instructions, please refer to the [API Documentation](https://github.com/n1lby73/grade-extractor/blob/main/Api_Documentation.md).
 
 The documentation includes all necessary details to interact with the API, including:
 
-    Login: Authentication process to obtain a JWT token.
-    Register: Endpoint to register new users.
-    File Uploads: How to upload results and template files.
-    Generate Reports: Instructions for generating student reports by class.
+- **Login:** Authentication process to obtain a JWT token.
+
+- **Register:** Endpoint to register new users.
+
+- **File Uploads:** How to upload results and template files.
+
+- **Generate Reports:** Instructions for generating student reports by class.
 
 ### File Format Requirements
 
@@ -83,36 +84,6 @@ This template should contain placeholders for student names and course scores. T
 - You must include the `Authorization: Bearer <access_token>` header in your requests to authenticated endpoints.
 - The `access_token` is received upon successful login and is used to authenticate your requests.
 
-## Example cURL Requests
-
-**Login Example**:
-```bash
-curl -X POST https://gradetractor.onrender.com/api/v1/login \
-     -H "Content-Type: application/json" \
-     -d '{"email": "user@example.com", "password": "yourpassword"}'
-```
-
-**Upload `result.xlsx`**:
-```bash
-curl -X POST https://gradetractor.onrender.com/api/v1/result \
-     -H "Authorization: Bearer <access_token>" \
-     -F "file=@/path/to/result.xlsx"
-```
-
-**Generate Reports**:
-```bash
-curl -X POST https://gradetractor.onrender.com/api/v1/genresult \
-     -H "Authorization: Bearer <access_token>" \
-     -H "Content-Type: application/json" \
-     -d '{"className": "Class1"}'
-```
-
-## Error Handling
-
-- **400 Bad Request**: Invalid file format, missing fields, or incorrect data.
-- **401 Unauthorized**: Invalid or expired token.
-- **404 Not Found**: Class not found or missing required files.
-- **500 Internal Server Error**: Server issues or failed processing.
 
 ## How to Test the API
 
@@ -124,7 +95,3 @@ To test the API, you can use tools like **Postman** or **cURL** to send requests
 ## License
 
 This project is licensed under the MIT License.
-
----
-
-This updated README includes all the essential details about interacting with the API via HTTP requests. Feel free to adjust the instructions or add more information based on your needs.
