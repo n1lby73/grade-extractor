@@ -94,4 +94,4 @@ To test the API, you can use tools like **Postman** or **cURL** to send requests
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [GNU General Public License v3.0](https://github.com/n1lby73/grade-extractor/blob/main/LICENSE).
