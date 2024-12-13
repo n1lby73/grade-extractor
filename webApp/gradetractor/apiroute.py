@@ -25,11 +25,11 @@ def validateNumberOfFiles(path): #function to be used as a wrapper to confirm if
 
     if "template.xlsx" in missingFile:
 
-        return {"error": 'result template has not been uploaded'}, 404
+        return {"error": "Result template not uploaded. Please upload the template file before proceeding."}, 404
         
     if "result.xlsx" in missingFile:
 
-        return {"error": 'excel results datasheet has not been uploaded'}, 404
+        return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 404
 
     return True
 
@@ -48,7 +48,7 @@ class results(Resource):
         # Check if the 'file' key exists in the request
         if 'file' not in request.files:
 
-            return {'error': "No file part"}, 400
+            return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 400
         
         file = request.files['file']
         
@@ -72,7 +72,7 @@ class results(Resource):
         
         else:
 
-            return {'error': "Wrong file format"}, 400
+            return {"error": "Invalid file format. Please upload a file with the .xlsx extension."}, 400
         
 class templates(Resource):
     @jwt_required()        
@@ -80,12 +80,12 @@ class templates(Resource):
 
         if not session.get("resultDbPath"):
 
-            return {'error': 'excel database containing all classes has not been uploaded'}, 404
+            return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 404
         
         # Check if the 'file' key exists in the request
         if 'file' not in request.files:
 
-            return {'error': "No file path"}, 400
+            return {"error": "No file uploaded. Please upload a valid file using the 'file' field."}, 400
         
         file = request.files['file']
         
@@ -105,7 +105,7 @@ class templates(Resource):
         
         else:
 
-            return {'error': "Wrong file format"}, 400
+            return {"error": "Invalid file format. Please upload a file with the .xlsx extension." }, 400
 
 class allClasses(Resource):
     @jwt_required()
@@ -113,7 +113,7 @@ class allClasses(Resource):
 
         if not session.get("resultDbPath"):
 
-            return {'error': 'excel database containing all classes has not been uploaded'}, 404
+            return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 404
         
         #confirm that all needed file are readily available
         parentPathForFiles = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
@@ -161,7 +161,7 @@ class genResult(Resource):
 
         if not session.get("resultDbPath"):
 
-            return {"error":"excel db and template not uploaded"}, 400
+            return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 400
         
         parentPathForFiles = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
         
@@ -197,7 +197,7 @@ class genResult(Resource):
         # Validate if the requested class exists in the available classes
         if className not in available_classes:
 
-            return {"error": f"Class '{className}' does not exist in the excel database."}, 404
+            return { "error": f"Class {className} not found. Please ensure the class exists in the uploaded results file." }, 404
                 
         resultSheetPath = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'), 'result.xlsx')
 
@@ -538,11 +538,11 @@ class reg(Resource):
         
         else:
 
-            return jsonify('error', 'Failed to insert data'), 500
+            return jsonify("error": "Failed to save your data. Please try again later. If the issue persists, contact support."), 500
 
 api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(login, '/api/v1/login', '/api/v1/login/')
 api.add_resource(results, '/api/v1/result', '/api/v1/result/')
 api.add_resource(allClasses, '/api/v1/extractClasses', '/api/v1/extractClasses/')
 api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
-api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
+api.add_resource(genResult, '/api/v1/genresult', '/api/v1/genresult/')
