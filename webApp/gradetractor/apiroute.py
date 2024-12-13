@@ -189,7 +189,7 @@ class genResult(Resource):
         response = requests.get(all_classes_url, headers=headers, cookies=cookies)
         
         if response.status_code != 200:
-            return {"response":response.text}, 500
+            return {"error":response.text}, 500
         
         # Parse the available classes from the response
         available_classes = response.json().get('allClasses', [])
@@ -543,6 +543,6 @@ class reg(Resource):
 api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(login, '/api/v1/login', '/api/v1/login/')
 api.add_resource(results, '/api/v1/result', '/api/v1/result/')
-api.add_resource(allClasses, '/api/v1/index', '/api/v1/index/')
+api.add_resource(allClasses, '/api/v1/extractClasses', '/api/v1/extractClasses/')
 api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
 api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
