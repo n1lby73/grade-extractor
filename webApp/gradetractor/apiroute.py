@@ -172,7 +172,7 @@ class genResult(Resource):
             return validator
         
         #Get all available classes from the allClasses endpoint
-        all_classes_url = f"{request.host_url}/api/v1/index"
+        all_classes_url = f"{request.host_url}/api/v1/extractClasses"
 
         #Extract authorization token to use in making the request
         token = request.headers['Authorization'].split(' ')[1]
@@ -459,8 +459,10 @@ class genResult(Resource):
 
         @after_this_request
         def deleteAllFiles(response):
-            
-            shutil.rmtree(app.config['UPLOAD_FOLDER'])
+
+            userDirectoryToDelete = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath'))
+                                      
+            shutil.rmtree(userDirectoryToDelete)
             session.pop("resultDbPath", None)
             return response
 
@@ -545,4 +547,4 @@ api.add_resource(login, '/api/v1/login', '/api/v1/login/')
 api.add_resource(results, '/api/v1/result', '/api/v1/result/')
 api.add_resource(allClasses, '/api/v1/extractClasses', '/api/v1/extractClasses/')
 api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
-api.add_resource(genResult, '/api/v1/genresult', '/api/v1/genresult/')
+api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
