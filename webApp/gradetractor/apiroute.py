@@ -538,7 +538,7 @@ class reg(Resource):
         
         else:
 
-            return jsonify("error": "Failed to save your data. Please try again later. If the issue persists, contact support."), 500
+            return jsonify({"error": "Failed to save your data. Please try again later. If the issue persists, contact support."}), 500
 
 api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(login, '/api/v1/login', '/api/v1/login/')
