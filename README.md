@@ -1,208 +1,130 @@
-# grade-extractor
-extract grades of every course per students from a excel sheet and email to individual parent
+# Student Results Report Generator API
 
+This project provides an API for generating individual student report cards based on results stored in an Excel file (`result.xlsx`) and a template (`template.xlsx`). The API allows users to upload student result data, generate reports, and identify students who are on probation or termination based on their course scores.
 
-### API Documentation for **GradeTractor API**
+## API Overview
 
-Base URL:  
-`https://gradetractor.onrender.com`
+The application is built using Flask and exposes several API endpoints to upload data, generate reports, and manage student results.
 
----
+### Available API Endpoints
 
-### Authentication
+- **POST /api/v1/login**: User login endpoint to authenticate and receive a JWT token.
+- **POST /api/v1/reg**: Registration endpoint for new users.
+- **POST /api/v1/result**: Uploads the `result.xlsx` file (student results).
+- **POST /api/v1/template**: Uploads the `template.xlsx` file (student report template).
+- **GET /api/v1/extractClasses**: Fetches all classes listed in the uploaded results file.
+- **POST /api/v1/genresult**: Generates individual reports for students based on the selected class.
 
-#### **Login**
-- **Endpoint**: `/api/v1/login`
-- **Method**: `POST`
-- **Description**: Logs a user in and returns a JWT token for authentication.
-  
-- **Request Body** (JSON):
-  ```json
-  {
-    "email": "user@example.com",
-    "password": "your_password"
-  }
-  ```
+## Prerequisites
 
-- **Response**:
-  - **Success** (200 OK):
-    ```json
-    {
-      "success": "login successful",
-      "token": {
-        "access_token": "your_access_token",
-        "refresh_token": "your_refresh_token"
-      }
-    }
-    ```
-  - **Error** (400 Bad Request): 
-    ```json
-    {
-      "Error": "Email or password is incorrect"
-    }
-    ```
+- Python 3.x
+- Flask
+- Flask-JWT-Extended
+- openpyxl (for Excel file processing)
+- Pandas (for processing student data)
 
----
+You can install the required dependencies using `pip`:
 
-#### **Register**
-- **Endpoint**: `/api/v1/reg`
-- **Method**: `POST`
-- **Description**: Registers a new user and stores their email and password (hashed) in the database.
-  
-- **Request Body** (JSON):
-  ```json
-  {
-    "email": "new_user@example.com",
-    "password": "new_user_password"
-  }
-  ```
-
-- **Response**:
-  - **Success** (201 Created):
-    ```json
-    {
-      "message": "Data inserted successfully",
-      "inserted_id": "inserted_user_id"
-    }
-    ```
-  - **Error** (400 Bad Request): 
-    ```json
-    {
-      "Error": "Mail already exist"
-    }
-    ```
-
----
-
-### Results Management
-
-#### **Upload Results Database**
-- **Endpoint**: `/api/v1/result`
-- **Method**: `POST`
-- **Description**: Uploads the results database (a `.xlsx` file).
-  
-- **Request**:
-  - `file`: The results file (must be `.xlsx` format).
-
-- **Response**:
-  - **Success** (200 OK):
-    ```json
-    {
-      "message": "File uploaded successfully"
-    }
-    ```
-  - **Error** (400 Bad Request): 
-    ```json
-    {
-      "error": "Invalid file format. Please upload a file with the .xlsx extension."
-    }
-    ```
-
----
-
-#### **Upload Template**
-- **Endpoint**: `/api/v1/template`
-- **Method**: `POST`
-- **Description**: Uploads the template file (a `.xlsx` file) to generate the reports.
-  
-- **Request**:
-  - `file`: The template file (must be `.xlsx` format).
-
-- **Response**:
-  - **Success** (200 OK):
-    ```json
-    {
-      "message": "File uploaded successfully"
-    }
-    ```
-  - **Error** (400 Bad Request): 
-    ```json
-    {
-      "error": "Invalid file format. Please upload a file with the .xlsx extension."
-    }
-    ```
-
----
-
-#### **Get All Classes**
-- **Endpoint**: `/api/v1/extractClasses`
-- **Method**: `GET`
-- **Description**: Fetches all classes from the uploaded results file.
-
-- **Response**:
-  - **Success** (200 OK):
-    ```json
-    {
-      "allClasses": ["Class A", "Class B", "Class C"]
-    }
-    ```
-  - **Error** (404 Not Found): 
-    ```json
-    {
-      "error": "Results database not uploaded. Please upload the results file before proceeding."
-    }
-    ```
-
----
-
-#### **Generate Results**
-- **Endpoint**: `/api/v1/genresult`
-- **Method**: `POST`
-- **Description**: Generates the individual results for a given class, including probation and termination lists.
-
-- **Request Body** (JSON):
-  ```json
-  {
-    "className": "Class A"
-  }
-  ```
-
-- **Response**:
-  - **Success** (200 OK):
-    - The response will be a **zip file** containing the generated individual reports for the selected class.
-  
-  - **Error** (400 Bad Request):
-    ```json
-    {
-      "error": "Results database not uploaded. Please upload the results file before proceeding."
-    }
-    ```
-  - **Error** (404 Not Found): 
-    ```json
-    {
-      "error": "Class {className} not found. Please ensure the class exists in the uploaded results file."
-    }
-    ```
-
----
-
-### Error Handling
-
-The API uses standard HTTP status codes to indicate the success or failure of a request. Below are some common error responses:
-
-- **400 Bad Request**: The request could not be understood or was missing required parameters (e.g., missing file, invalid format).
-- **401 Unauthorized**: Invalid or expired JWT token.
-- **404 Not Found**: The requested resource was not found (e.g., missing class in the results).
-- **500 Internal Server Error**: An error occurred on the server while processing the request.
-
----
-
-### JWT Authentication
-
-For endpoints requiring JWT authentication (`/api/v1/result`, `/api/v1/template`, `/api/v1/extractClasses`, `/api/v1/genresult`), you must include the `Authorization` header with the `Bearer <access_token>`.
-
-Example:
 ```bash
-Authorization: Bearer <access_token>
+pip install -r requirements.txt
 ```
 
-The `access_token` can be obtained by logging in through the `/api/v1/login` endpoint.
+## How to Use
+
+This project uses a REST API for interacting with the system. You will need to use HTTP requests to communicate with the API. You can use tools like **Postman** or **cURL**, or you can integrate the API calls into your own system.
+
+How to Use
+
+To interact with the API, follow these steps:
+
+-  User Authentication:
+    -    Register or log in to the system to receive an authentication token.
+
+    - Upload Results Database:
+        - Upload the student results file (result.xlsx) that contains student grades.
+
+    - Upload Template:
+        - Upload the report template file (template.xlsx), which is used to generate individual student reports.
+
+    - Generate Reports:
+        - Once the results and template are uploaded, select a class and generate individual student reports. These reports include details about probation or termination status based on student performance.
+
+    -
+
+API Documentation
+
+For full API endpoint details, including request bodies, responses, and authentication instructions, please refer to the [API Documentation]().
+
+The documentation includes all necessary details to interact with the API, including:
+
+    Login: Authentication process to obtain a JWT token.
+    Register: Endpoint to register new users.
+    File Uploads: How to upload results and template files.
+    Generate Reports: Instructions for generating student reports by class.
+
+### File Format Requirements
+
+#### **`result.xlsx` (Student Data)**
+
+- **Sheet Names**: Each sheet represents a class. The system will process sheets that contain "emy" or "ety" in their name and exclude sheets with "Assessment" or ">".
+- **Row 3**: Contains the number of courses.
+- **Row 5**: Contains course names.
+- **Row 7 onward**: Contains student names in the format "Last Name, First Name, Middle Name".
+- **Score Columns**: Student scores are listed next to their names.
+- **Average Column**: The column after the last course column is for the average score.
+
+#### **`template.xlsx` (Report Template)**
+
+This template should contain placeholders for student names and course scores. The application will fill these placeholders with the data from the `result.xlsx` file.
+
+## Authentication
+
+- All endpoints except for **login** and **registration** require authentication.
+- You must include the `Authorization: Bearer <access_token>` header in your requests to authenticated endpoints.
+- The `access_token` is received upon successful login and is used to authenticate your requests.
+
+## Example cURL Requests
+
+**Login Example**:
+```bash
+curl -X POST https://gradetractor.onrender.com/api/v1/login \
+     -H "Content-Type: application/json" \
+     -d '{"email": "user@example.com", "password": "yourpassword"}'
+```
+
+**Upload `result.xlsx`**:
+```bash
+curl -X POST https://gradetractor.onrender.com/api/v1/result \
+     -H "Authorization: Bearer <access_token>" \
+     -F "file=@/path/to/result.xlsx"
+```
+
+**Generate Reports**:
+```bash
+curl -X POST https://gradetractor.onrender.com/api/v1/genresult \
+     -H "Authorization: Bearer <access_token>" \
+     -H "Content-Type: application/json" \
+     -d '{"className": "Class1"}'
+```
+
+## Error Handling
+
+- **400 Bad Request**: Invalid file format, missing fields, or incorrect data.
+- **401 Unauthorized**: Invalid or expired token.
+- **404 Not Found**: Class not found or missing required files.
+- **500 Internal Server Error**: Server issues or failed processing.
+
+## How to Test the API
+
+To test the API, you can use tools like **Postman** or **cURL** to send requests to the endpoints. Make sure to:
+1. Register a user via the **/api/v1/reg** endpoint.
+2. Log in using the **/api/v1/login** endpoint to retrieve the `access_token`.
+3. Use the token to authenticate other API requests (e.g., upload files and generate reports).
+
+## License
+
+This project is licensed under the MIT License.
 
 ---
 
-### Notes:
-
-- The **Results Database** and **Template** files should be in `.xlsx` format.
-- After uploading the results database and template, the system validates if both files are available before proceeding.
-- For **Generating Results**, you must specify the class name (from the available classes) to generate individual reports.
-- The generated reports include a list of students on probation or termination based on their performance.
+This updated README includes all the essential details about interacting with the API via HTTP requests. Feel free to adjust the instructions or add more information based on your needs.
