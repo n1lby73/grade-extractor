@@ -1,25 +1,25 @@
 # Interfacing directly with Google spreadsheet
 
-# from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, create_refresh_token, set_access_cookies
+from flask_jwt_extended import jwt_required,create_access_token, create_refresh_token, set_access_cookies, decode_token #get_jwt_identity,  jwt_manager
 # from werkzeug.security import generate_password_hash, check_password_hash
-# from flask import jsonify, request, session,send_file, after_this_request
-# from flask_restful import Resource, reqparse
+from flask import jsonify#, request, session,send_file, after_this_request
+from flask_restful import Resource, reqparse
 # import openpyxl, shutil, uuid, os, requests
 # from werkzeug.utils import secure_filename
-# from gradetractor import api, jwt, db, app
+from gradetractor import api, jwt#, db, app
 # import pandas as pd
 
 from dotenv import load_dotenv
 import gspread
 import os
-
+from gspread.exceptions import SpreadsheetNotFound, APIError
 load_dotenv()
 
 scopes = ["https://www.googleapis.com/auth/spreadsheets"]
 
 accountCredentials = gspread.service_account(filename=os.getenv("googleCred"))
 
-moduleSpreadsheet #varaible to hold the spreadsheet of the module to work with - EMY, ETY, MOD, MECH
+moduleSpreadsheet = "" #varaible to hold the spreadsheet of the module to work with - EMY, ETY, MOD, MECH
 
 availableModules = ["emy", "ety", "mod", "mech"]
 
@@ -57,7 +57,7 @@ def my_expired_token_callback(jwt_header, jwt_payload):
 def handle_invalid(error):
     return ({"message": "invalid token", "error":error}), 401
 
-class allClasses(Resource):
+class allClassesV2(Resource):
 
     def __init__(self):
 
@@ -68,6 +68,8 @@ class allClasses(Resource):
         
         args = self.parser.parse_args()
         studentModule = args["studentModule"].lower()
+
+        global moduleSpreadsheet
 
         if studentModule not in availableModules:
 
@@ -83,31 +85,30 @@ class allClasses(Resource):
 
             case "emy":
 
-                moduleSpreadsheet = accountCredentials.open_by_key(os.getenv("emyResultSheet"))
+                moduleSpreadsheet = os.getenv("emyResultSheet")
             
             case "ety":
 
-                moduleSpreadsheet = accountCredentials.open_by_key(os.getenv("etyResultSheet"))
+                moduleSpreadsheet = os.getenv("etyResultSheet")
 
         try:
                     
             availableClasses.clear()
-            classes = list(map(lambda classesName: classesName.title, moduleSpreadsheet.worksheet()))
+            classes = list(map(lambda classesName: classesName.title, accountCredentials.open_by_key(moduleSpreadsheet).worksheets()))
             
-            return jsonify ({
+            return {
 
-                "availableClasses":classes
-                "spreadsheet":moduleSpreadsheet
+                "availableClasses":classes,
 
-            }),200
+            },200
 
         except Exception as e:
 
-            return jsonify({
+            return {
                 
                 "error": str(e)
             
-            }), 500
+            }, 500
 
 class genResult(Resource):
     @jwt_required()
@@ -132,52 +133,61 @@ class loginV2(Resource):
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument("className", required=True)
+        self.parser.add_argument("classCode", required=True)
         self.parser.add_argument("studentID", required=True)
         self.parser.add_argument("password", required=True)
     
     def post(self):
 
         args = self.parser.parse_args()
-        classCode = args["className"].lower()
-        studentID = args["studentID"].lower()
+        classCode = args["classCode"]
+        studentID = args["studentID"]
         password = args["password"]
 
-        worksheet = moduleSpreadsheet.worksheet(className)
+        global moduleSpreadsheet
+
+        if not moduleSpreadsheet:
+
+            return ({
+
+                "error":"select module by retrieving all classes"
+
+            }), 400
+
+        worksheet = accountCredentials.open_by_key(moduleSpreadsheet).worksheet(classCode)
+       
+        # worksheet = moduleSpreadsheet.worksheet(classCode)
 
         try:
             
-            if worksheet.find(studentID) and worksheet.find(password):
+            if worksheet.find(studentID) :#and worksheet.find(password):
                 
-            refresh_token = create_refresh_token(identity=studentID)
-            access_token = create_access_token(identity=studentID, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
+                refresh_token = create_refresh_token(identity=studentID)
+                access_token = create_access_token(identity=studentID, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
 
-            response = jsonify(
+                response = jsonify(
 
-                {
-                    "success": "login successful",
-                    "token":{
-                        "access_token":access_token, "refresh_token":refresh_token
+                    {
+                        "success": "login successful",
+                        "token":{
+                            "access_token":access_token, "refresh_token":refresh_token
+                        }
                     }
-                }
-            
-            )
+                )
 
-            set_access_cookies(response, access_token)
-            
-            return response
-        
-        except ValueError:
+                set_access_cookies(response, access_token)
+                
+                return response
 
-            return jsonify({
+            return ({
                 
                 "error":"Student ID or Password is incorrect"
 
             }), 404
 
         except Exception as e:
-
-            return jsonify({
+            
+            return ({
                 
                 "error": str(e)
             
@@ -185,7 +195,7 @@ class loginV2(Resource):
 
 # api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(loginV2, '/api/v2/login', '/api/v2/login/')
-api.add_resource(results, '/api/v1/result', '/api/v1/result/')
-api.add_resource(allClasses, '/api/v2/extractClasses', '/api/v2/extractClasses/')
-api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
-api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
+# api.add_resource(results, '/api/v1/result', '/api/v1/result/')
+api.add_resource(allClassesV2, '/api/v2/extractClasses', '/api/v2/extractClasses/')
+# api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
+# api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
