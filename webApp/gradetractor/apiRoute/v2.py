@@ -1,13 +1,9 @@
 # Interfacing directly with Google spreadsheet
 
-from flask_jwt_extended import jwt_required,create_access_token, create_refresh_token, set_access_cookies, decode_token, get_jwt_identity#,  jwt_manager
-# from werkzeug.security import generate_password_hash, check_password_hash
-from flask import jsonify#, request, session,send_file, after_this_request
+from flask_jwt_extended import jwt_required,create_access_token, create_refresh_token, set_access_cookies, decode_token, get_jwt_identity
+from flask import jsonify
 from flask_restful import Resource, reqparse
-# import openpyxl, shutil, uuid, os, requests
-# from werkzeug.utils import secure_filename
-from gradetractor import api, jwt#, db, app
-# import pandas as pd
+from gradetractor import api, jwt
 
 from dotenv import load_dotenv
 import gspread
@@ -22,30 +18,6 @@ accountCredentials = gspread.service_account(filename=os.getenv("googleCred"))
 moduleSpreadSheet = "" #varaible to hold the spreadsheet of the module to work with - EMY, ETY, MOD, MECH
 
 availableModules = ["emy", "ety", "mod", "mech"]
-
-# def allowed_file(filename):
-
-#     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# def validateNumberOfFiles(path): #function to be used as a wrapper to confirm if both template and db excel fiile has been uploaded
-
-#     path = os.path.join(app.config['UPLOAD_FOLDER'], session.get('resultDbPath')) #root path for expcted uploaded document
-
-#     totalFiles = [files for files in os.listdir(path) if os.path.isfile(os.path.join(path,files))] #list all the files in the directory
-
-#     expectedFiles= ["result.xlsx", "template.xlsx"]
-
-#     missingFile = [file for file in expectedFiles if file not in totalFiles] #iterate through to check if files to be worked with are present
-
-#     if "template.xlsx" in missingFile:
-
-#         return {"error": "Result template not uploaded. Please upload the template file before proceeding."}, 404
-        
-#     if "result.xlsx" in missingFile:
-
-#         return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 404
-
-#     return True
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
@@ -124,10 +96,9 @@ class genResultV2(Resource):
         return {
 
             "studentData":studentData
-            
-        }, 200
 
-       
+        }, 200
+   
 class loginV2(Resource):
 
     def __init__(self):
