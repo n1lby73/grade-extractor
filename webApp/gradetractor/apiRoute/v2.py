@@ -156,28 +156,31 @@ class loginV2(Resource):
 
         worksheet = accountCredentials.open_by_key(moduleSpreadsheet).worksheet(classCode)
        
-        # worksheet = moduleSpreadsheet.worksheet(classCode)
-
         try:
+            userID = worksheet.find(studentID)
             
-            if worksheet.find(studentID) :#and worksheet.find(password):
+            if userID and userID.row:
+
+                userPassword = worksheet.row_values(userID.row)
+
+                if password in userPassword:
                 
-                refresh_token = create_refresh_token(identity=studentID)
-                access_token = create_access_token(identity=studentID, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
+                    refresh_token = create_refresh_token(identity=studentID)
+                    access_token = create_access_token(identity=studentID, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
 
-                response = jsonify(
+                    response = jsonify(
 
-                    {
-                        "success": "login successful",
-                        "token":{
-                            "access_token":access_token, "refresh_token":refresh_token
+                        {
+                            "success": "login successful",
+                            "token":{
+                                "access_token":access_token, "refresh_token":refresh_token
+                            }
                         }
-                    }
-                )
+                    )
 
-                set_access_cookies(response, access_token)
-                
-                return response
+                    set_access_cookies(response, access_token)
+                    
+                    return response
 
             return ({
                 
