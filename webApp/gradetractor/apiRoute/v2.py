@@ -1,6 +1,6 @@
 # Interfacing directly with Google spreadsheet
 
-from flask_jwt_extended import jwt_required,create_access_token, create_refresh_token, set_access_cookies, decode_token #get_jwt_identity,  jwt_manager
+from flask_jwt_extended import jwt_required,create_access_token, create_refresh_token, set_access_cookies, decode_token, get_jwt_identity#,  jwt_manager
 # from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify#, request, session,send_file, after_this_request
 from flask_restful import Resource, reqparse
@@ -19,7 +19,7 @@ scopes = ["https://www.googleapis.com/auth/spreadsheets"]
 
 accountCredentials = gspread.service_account(filename=os.getenv("googleCred"))
 
-moduleSpreadsheet = "" #varaible to hold the spreadsheet of the module to work with - EMY, ETY, MOD, MECH
+moduleSpreadSheet = "" #varaible to hold the spreadsheet of the module to work with - EMY, ETY, MOD, MECH
 
 availableModules = ["emy", "ety", "mod", "mech"]
 
@@ -67,7 +67,7 @@ class allClassesV2(Resource):
         args = self.parser.parse_args()
         studentModule = args["studentModule"].lower()
 
-        global moduleSpreadsheet
+        global moduleSpreadSheet
 
         if studentModule not in availableModules:
 
@@ -83,15 +83,15 @@ class allClassesV2(Resource):
 
             case "emy":
 
-                moduleSpreadsheet = os.getenv("emyResultSheet")
+                moduleSpreadSheet = os.getenv("emyResultSheet")
             
             case "ety":
 
-                moduleSpreadsheet = os.getenv("etyResultSheet")
+                moduleSpreadSheet = os.getenv("etyResultSheet")
 
         try:
                     
-            classes = list(map(lambda classesName: classesName.title, accountCredentials.open_by_key(moduleSpreadsheet).worksheets()))
+            classes = list(map(lambda classesName: classesName.title, accountCredentials.open_by_key(moduleSpreadSheet).worksheets()))
             
             return {
 
@@ -107,23 +107,29 @@ class allClassesV2(Resource):
             
             }, 500
 
-class genResult(Resource):
+class genResultV2(Resource):
     @jwt_required()
-    def __init__(self):
-
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument("className", required=True)
-        self.parser.add_argument("spreadSheet", required=True)
-
     def post(self):
 
-        args = self.parser.parse_args()
-        className = args["className"]
-        spreadSheet = args["spreadsheet"]
+        embeddedIdentity = json.loads(get_jwt_identity()) #unserialize the data back into string same way it was serialize into json data on the login endpoint
 
-        if not session.get("resultDbPath"):
+        classCode = embeddedIdentity["classCode"]
+        studentID = embeddedIdentity["studentID"]
+        moduleSpreadSheet = embeddedIdentity["moduleSpreadSheet"]
 
-            return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 400
+        worksheet = accountCredentials.open_by_key(moduleSpreadSheet).worksheet(classCode)
+        userID = worksheet.find(studentID)
+        studentData = worksheet.row_values(userID.row)
+        print (embeddedIdentity, moduleSpreadSheet)
+        # for i in id:
+        #     print (i)
+        # args = self.parser.parse_args()
+        # className = args["className"]
+        # spreadSheetaccess_token = args["spreadsheet"]
+
+        # if not session.get("resultDbPath"):
+
+        #     return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 400
 
 class loginV2(Resource):
 
@@ -141,9 +147,9 @@ class loginV2(Resource):
         studentID = args["studentID"]
         password = args["password"]
 
-        global moduleSpreadsheet
+        global moduleSpreadSheet
 
-        if not moduleSpreadsheet:
+        if not moduleSpreadSheet:
 
             return ({
 
@@ -151,7 +157,7 @@ class loginV2(Resource):
 
             }), 400
 
-        worksheet = accountCredentials.open_by_key(moduleSpreadsheet).worksheet(classCode)
+        worksheet = accountCredentials.open_by_key(moduleSpreadSheet).worksheet(classCode)
        
         try:
             userID = worksheet.find(studentID)
@@ -166,7 +172,8 @@ class loginV2(Resource):
                     identityData = {
 
                         "classCode":classCode,
-                        "studentID":studentID
+                        "studentID":studentID,
+                        "moduleSpreadSheet": moduleSpreadSheet
                     
                     }
 
@@ -209,4 +216,4 @@ api.add_resource(loginV2, '/api/v2/login', '/api/v2/login/')
 # api.add_resource(results, '/api/v1/result', '/api/v1/result/')
 api.add_resource(allClassesV2, '/api/v2/extractClasses', '/api/v2/extractClasses/')
 # api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
-# api.add_resource(genResult, '/api/v1/genResult', '/api/v1/genResult/')
+api.add_resource(genResultV2, '/api/v2/genResult', '/api/v2/genResult/')
