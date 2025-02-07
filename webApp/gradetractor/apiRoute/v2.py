@@ -115,22 +115,19 @@ class genResultV2(Resource):
 
         classCode = embeddedIdentity["classCode"]
         studentID = embeddedIdentity["studentID"]
-        moduleSpreadSheet = embeddedIdentity["moduleSpreadSheet"]
+        moduleSpreadSheet = embeddedIdentity["moduleSpreadSheet"] #note that sheet id can also be retrieved if token falls into wrong hand
 
         worksheet = accountCredentials.open_by_key(moduleSpreadSheet).worksheet(classCode)
         userID = worksheet.find(studentID)
         studentData = worksheet.row_values(userID.row)
-        print (embeddedIdentity, moduleSpreadSheet)
-        # for i in id:
-        #     print (i)
-        # args = self.parser.parse_args()
-        # className = args["className"]
-        # spreadSheetaccess_token = args["spreadsheet"]
+        
+        return {
 
-        # if not session.get("resultDbPath"):
+            "studentData":studentData
+            
+        }, 200
 
-        #     return {"error": "Results database not uploaded. Please upload the results file before proceeding."}, 400
-
+       
 class loginV2(Resource):
 
     def __init__(self):
@@ -213,7 +210,5 @@ class loginV2(Resource):
 
 # api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(loginV2, '/api/v2/login', '/api/v2/login/')
-# api.add_resource(results, '/api/v1/result', '/api/v1/result/')
 api.add_resource(allClassesV2, '/api/v2/extractClasses', '/api/v2/extractClasses/')
-# api.add_resource(templates, '/api/v1/template', '/api/v1/template/')
 api.add_resource(genResultV2, '/api/v2/genResult', '/api/v2/genResult/')
