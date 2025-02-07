@@ -23,8 +23,6 @@ moduleSpreadsheet = "" #varaible to hold the spreadsheet of the module to work w
 
 availableModules = ["emy", "ety", "mod", "mech"]
 
-availableClasses = []
-
 # def allowed_file(filename):
 
 #     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -93,7 +91,6 @@ class allClassesV2(Resource):
 
         try:
                     
-            availableClasses.clear()
             classes = list(map(lambda classesName: classesName.title, accountCredentials.open_by_key(moduleSpreadsheet).worksheets()))
             
             return {
