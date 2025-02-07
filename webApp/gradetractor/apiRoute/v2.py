@@ -11,7 +11,7 @@ from gradetractor import api, jwt#, db, app
 
 from dotenv import load_dotenv
 import gspread
-import os
+import os, json
 from gspread.exceptions import SpreadsheetNotFound, APIError
 load_dotenv()
 
@@ -161,9 +161,20 @@ class loginV2(Resource):
                 userPassword = worksheet.row_values(userID.row)
 
                 if password in userPassword:
-                
-                    refresh_token = create_refresh_token(identity=studentID)
-                    access_token = create_access_token(identity=studentID, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
+
+                    # Embedding class code and student id into the token so as to identify which student is currently in session and extract their data from jwt protected endpoints
+                    identityData = {
+
+                        "classCode":classCode,
+                        "studentID":studentID
+                    
+                    }
+
+                    embeddedIdentity = json.dumps(identityData)
+
+
+                    refresh_token = create_refresh_token(identity=embeddedIdentity)
+                    access_token = create_access_token(identity=embeddedIdentity, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
 
                     response = jsonify(
 
