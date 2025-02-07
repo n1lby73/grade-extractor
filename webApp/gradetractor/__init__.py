@@ -17,4 +17,4 @@ CORS(app, cors_allowed_origin=['http://127.0.0.1:5000/api/v1/result'])
 
 users_collection = db.users
 
-from gradetractor import apiRoute.v1, apiRoute.v2
+from gradetractor.apiRoute import v1, v2
