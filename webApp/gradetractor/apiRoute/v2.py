@@ -19,6 +19,17 @@ moduleSpreadSheet = "" #varaible to hold the spreadsheet of the module to work w
 
 availableModules = ["emy", "ety", "mod", "mech"]
 
+#copied function, as at this commit no idea on how it fully works
+
+def colNumberToLetter(col_num):
+    result = ''
+    while col_num > 0:
+        col_num -= 1
+        remainder = col_num % 26
+        result = chr(remainder + ord('A')) + result
+        col_num //= 26
+    return result
+
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
     return ({"message": "expired token"}), 401
@@ -92,10 +103,29 @@ class genResultV2(Resource):
         worksheet = accountCredentials.open_by_key(moduleSpreadSheet).worksheet(classCode)
         userID = worksheet.find(studentID)
         studentData = worksheet.row_values(userID.row)
+
+        # Retrieve all available course utilizing Technical Communication as the first on the list and Gradde to be the one signifying the end of the list
+    
+        locateStartCourse = worksheet.find("Technical Communication")
+        locateEndCourse = worksheet.find("GRADE")
+
+        #retrieve the co-ordinates and convert the column number to letter notation utilizing ASCII 
+
+        startCourseColumn = chr(ord("A") + (locateStartCourse.col-1)) # ord() converts string A to it ASCII value, chr() converts the calculated value back to the ASCII letter
+        endCourseColumn = chr(ord("A") + (locateEndCourse.col-1))
+
+        print (startCourseColumn, endCourseColumn)
+        # print(courseCountStart.row, courseCountStart.col)
+        # print(courseCountEnd.row, courseCountEnd.col) 
+        # courseCountCordinates = str(courseCountStart.col)+":"+str(courseCountStart.row)
+        # print (courseCountEnd.row,courseCountEnd.col, courseCountCordinates)
+        print (worksheet.get("21:17"))
         
         return {
 
             "studentData":studentData
+            # "studentData":worksheet.get_all_records()
+            # worksheet.get_all_values()
 
         }, 200
    
@@ -124,10 +154,11 @@ class loginV2(Resource):
                 "error":"select module by retrieving all classes"
 
             }), 400
-
-        worksheet = accountCredentials.open_by_key(moduleSpreadSheet).worksheet(classCode)
        
         try:
+
+            worksheet = accountCredentials.open_by_key(moduleSpreadSheet).worksheet(classCode)
+
             userID = worksheet.find(studentID)
             
             if userID and userID.row:
@@ -168,6 +199,14 @@ class loginV2(Resource):
             return ({
                 
                 "error":"Student ID or Password is incorrect"
+
+            }), 401
+
+        except gspread.exceptions.WorksheetNotFound:
+
+            return ({
+
+                "error" : "Invalid class code"
 
             }), 404
 
