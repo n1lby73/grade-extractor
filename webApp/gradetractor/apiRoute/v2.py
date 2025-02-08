@@ -120,7 +120,20 @@ class genResultV2(Resource):
         startCourseRow = str(locateStartCourse.row)
         endCourseRow = str(locateEndCourse.row)
 
-        print (worksheet.get(startCourseColumn+startCourseRow+":"+endCourseColumn+endCourseRow))
+        # Pull out the course name to a single list instead of the generated nested list
+
+        courseNameCordinate = f"{startCourseColumn}{startCourseRow}:{endCourseColumn}{endCourseRow}"
+        courseByTitle = [courseName for generatedNestedCourseList in worksheet.get(courseNameCordinate) for courseName in generatedNestedCourseList]
+        
+        # Retrieve student scores to a single list instead of the generated nested list
+
+        scoresCordinate = f"{startCourseColumn}{userID.row}:{endCourseColumn}{userID.row}"
+        studentScore = [scores for generatedNestedScoreList in worksheet.get(scoresCordinate) for scores in generatedNestedScoreList]
+
+        scoreRefrencingCourse = dict(zip(courseByTitle, studentScore))
+
+
+        # print (courseByTitle)
         
         return {
 
