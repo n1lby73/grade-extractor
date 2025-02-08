@@ -19,7 +19,6 @@ moduleSpreadSheet = "" #varaible to hold the spreadsheet of the module to work w
 
 availableModules = ["emy", "ety", "mod", "mech"]
 
-#copied function, as at this commit no idea on how it fully works
 #retrieve the co-ordinates and convert the column number to letter notation utilizing ASCII 
 
 def colNumberToLetter(col_num):
@@ -146,9 +145,6 @@ class genResultV2(Resource):
         
         return {
 
-            # "studentData":studentData
-            # "studentData":worksheet.get_all_records()
-            # worksheet.get_all_values()
             "studentData": {
                 **scoreRefrencingCourse,
                 "name":studentName,
