@@ -20,13 +20,14 @@ moduleSpreadSheet = "" #varaible to hold the spreadsheet of the module to work w
 availableModules = ["emy", "ety", "mod", "mech"]
 
 #copied function, as at this commit no idea on how it fully works
+#retrieve the co-ordinates and convert the column number to letter notation utilizing ASCII 
 
 def colNumberToLetter(col_num):
     result = ''
     while col_num > 0:
         col_num -= 1
         remainder = col_num % 26
-        result = chr(remainder + ord('A')) + result
+        result = chr(remainder + ord('A')) + result # ord() converts string A to it ASCII value, chr() converts the calculated value back to the ASCII letter
         col_num //= 26
     return result
 
@@ -109,17 +110,17 @@ class genResultV2(Resource):
         locateStartCourse = worksheet.find("Technical Communication")
         locateEndCourse = worksheet.find("GRADE")
 
-        #retrieve the co-ordinates and convert the column number to letter notation utilizing ASCII 
+        # Convert column value to regular alphabet notation
 
-        startCourseColumn = chr(ord("A") + (locateStartCourse.col-1)) # ord() converts string A to it ASCII value, chr() converts the calculated value back to the ASCII letter
-        endCourseColumn = chr(ord("A") + (locateEndCourse.col-1))
+        startCourseColumn = colNumberToLetter(locateStartCourse.col)
+        endCourseColumn = colNumberToLetter(locateEndCourse.col)
 
-        print (startCourseColumn, endCourseColumn)
-        # print(courseCountStart.row, courseCountStart.col)
-        # print(courseCountEnd.row, courseCountEnd.col) 
-        # courseCountCordinates = str(courseCountStart.col)+":"+str(courseCountStart.row)
-        # print (courseCountEnd.row,courseCountEnd.col, courseCountCordinates)
-        print (worksheet.get("21:17"))
+        # Retrieve row number and covert to string
+        
+        startCourseRow = str(locateStartCourse.row)
+        endCourseRow = str(locateEndCourse.row)
+
+        print (worksheet.get(startCourseColumn+startCourseRow+":"+endCourseColumn+endCourseRow))
         
         return {
 
