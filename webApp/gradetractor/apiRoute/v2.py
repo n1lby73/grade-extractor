@@ -103,7 +103,7 @@ class genResultV2(Resource):
 
         worksheet = accountCredentials.open_by_key(moduleSpreadSheet).worksheet(classCode)
         userID = worksheet.find(studentID)
-        studentData = worksheet.row_values(userID.row)
+        studentData = worksheet.row_values(userID.row) # Every data of the student
 
         # Retrieve all available course utilizing Technical Communication as the first on the list and Gradde to be the one signifying the end of the list
     
@@ -132,14 +132,29 @@ class genResultV2(Resource):
 
         scoreRefrencingCourse = dict(zip(courseByTitle, studentScore))
 
+        # Retrieve students full name
 
-        # print (courseByTitle)
+        locateName = worksheet.find("SURNAME") # During API development, worksheet was said to have been standardized, the following column after surname is middle name followed by first name, hence no need in locating them
+        
+        surNameCol = colNumberToLetter(locateName.col)
+        firstNameCol = colNumberToLetter(locateName.col+2) # +2 so as for it to jump over the middle name column
+
+        studentNameCordinate = f"{surNameCol}{userID.row}:{firstNameCol}{userID.row}"
+        fullNameAsList = [studentName for genratedNestedName in worksheet.get(studentNameCordinate) for studentName in genratedNestedName]
+        
+        studentName = " ".join(fullNameAsList) # This line returnss the name as a string instead of the returend list
         
         return {
 
-            "studentData":studentData
+            # "studentData":studentData
             # "studentData":worksheet.get_all_records()
             # worksheet.get_all_values()
+            "studentData": {
+                **scoreRefrencingCourse,
+                "name":studentName,
+                "id": studentID,
+                "class": classCode
+            }
 
         }, 200
    
