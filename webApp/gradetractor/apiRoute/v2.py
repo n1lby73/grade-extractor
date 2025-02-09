@@ -7,13 +7,24 @@ from gradetractor import api, jwt
 
 from dotenv import load_dotenv
 import gspread
-import os, json
+import os, json, base64
 from gspread.exceptions import SpreadsheetNotFound, APIError
 load_dotenv()
 
+# Retrieve the base64-encoded credentials from environment variables
+encodedGoogleCredentials = os.getenv('googleCred')
+
+# Decode the credentials
+decodedGoogleCredentials = base64.b64decode(encodedGoogleCredentials)
+
+# Save the decoded credentials as a temporary JSON file
+with open('googleCred.json', 'wb') as f:
+    f.write(decodedGoogleCredentials)
+
 scopes = ["https://www.googleapis.com/auth/spreadsheets"]
 
-accountCredentials = gspread.service_account(filename=os.getenv("googleCred"))
+# accountCredentials = gspread.service_account(filename=os.getenv("googleCred"))
+accountCredentials = gspread.service_account(filename="googleCred.json")
 
 moduleSpreadSheet = "" #varaible to hold the spreadsheet of the module to work with - EMY, ETY, MOD, MECH
 
