@@ -51,7 +51,7 @@ To interact with the API, follow these steps:
 
 ## API Documentation
 
-For full API endpoint details, including request bodies, responses, and authentication instructions, please refer to the [API Documentation](https://github.com/n1lby73/grade-extractor/blob/main/Api_Documentation.md).
+For full API endpoint details, including request bodies, responses, and authentication instructions, please refer to the [API Documentation](https://github.com/n1lby73/grade-extractor/tree/main/docs).
 
 The documentation includes all necessary details to interact with the API, including:
 
