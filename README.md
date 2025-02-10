@@ -1,12 +1,18 @@
 # Student Results Report Generator API
 
-This project provides an API for generating individual student report cards based on results stored in an Excel file (`result.xlsx`) and a template (`template.xlsx`). The API allows users to upload student result data, generate reports, and identify students who are on probation or termination based on their course scores.
+This project provides an API for generating individual student report cards based on results stored in an Excel file (`result.xlsx`) and a template (`template.xlsx`). The API allows users to upload student result data, generate reports, and identify students who are on probation or termination based on their course scores. Additionally, v2 of the API allows students to view their results directly, retrieve data from Google Sheets, and interact with their course information.
 
 ## API Overview
 
-The application is built using Flask and exposes several API endpoints to upload data, generate reports, and manage student results.
+The application is built using Flask and exposes several API endpoints for uploading data, generating reports, and managing student results. The v2 API also enables students to retrieve their results directly from Google Sheets, based on their login credentials and selected class.
 
-### Available API Endpoints
+### Available API Endpoints (v2)
+
+- **POST /api/v2/login**: User login endpoint to authenticate and receive a JWT token.
+- **POST /api/v2/extractClasses**: Fetches all available classes from the selected module in Google Sheets.
+- **POST /api/v2/genResult**: Generates individual reports for students based on their selected class.
+
+### Available API Endpoints (v1)
 
 - **POST /api/v1/login**: User login endpoint to authenticate and receive a JWT token.
 - **POST /api/v1/reg**: Registration endpoint for new users.
@@ -33,7 +39,7 @@ pip install -r requirements.txt
 
 This project uses a REST API for interacting with the system. You will need to use HTTP requests to communicate with the API. You can use tools like **Postman** or **cURL**, or you can integrate the API calls into your own system.
 
-How to Use
+### Version 1
 
 To interact with the API, follow these steps:
 
@@ -48,6 +54,19 @@ To interact with the API, follow these steps:
 
 - Generate Reports:
     - Once the results and template are uploaded, select a class and generate individual student reports. These reports include details about probation or termination status based on student performance.
+
+### Version 2
+
+To interact with the API, follow these steps:
+
+-  Extract Clases:
+    -    First, send a request to the /api/v2/extractClasses endpoint to fetch the list of available classes. This allows the frontend to display the list of classes before the user logs in.
+
+- Login:
+    - After selecting a class, use the /api/v2/login endpoint to authenticate the user. You’ll need to include the class code, student ID, and password. Upon successful login, you will receive an authentication token.
+
+- Generate Reports:
+    - Once logged in, use the /api/v2/genResult endpoint along with the authentication token to generate individual student reports
 
 ## API Documentation
 
