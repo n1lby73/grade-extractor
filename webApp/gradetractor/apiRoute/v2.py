@@ -15,16 +15,13 @@ load_dotenv()
 encodedGoogleCredentials = os.getenv('googleCred')
 
 # Decode the credentials
-decodedGoogleCredentials = base64.b64decode(encodedGoogleCredentials)
-
-# Save the decoded credentials as a temporary JSON file
-with open('googleCred.json', 'wb') as f:
-    f.write(decodedGoogleCredentials)
+credentials = json.loads(base64.b64decode(encodedGoogleCredentials))
 
 scopes = ["https://www.googleapis.com/auth/spreadsheets"]
 
-# accountCredentials = gspread.service_account(filename=os.getenv("googleCred"))
-accountCredentials = gspread.service_account(filename="googleCred.json")
+
+accountCredentials = gspread.service_account_from_dict(credentials)
+
 
 moduleSpreadSheet = "" #varaible to hold the spreadsheet of the module to work with - EMY, ETY, MOD, MECH
 
@@ -254,7 +251,6 @@ class loginV2(Resource):
             
             }), 500
 
-# api.add_resource(reg, '/api/v1/reg', '/api/v1/reg/')
 api.add_resource(loginV2, '/api/v2/login', '/api/v2/login/')
 api.add_resource(allClassesV2, '/api/v2/extractClasses', '/api/v2/extractClasses/')
 api.add_resource(genResultV2, '/api/v2/genResult', '/api/v2/genResult/')
