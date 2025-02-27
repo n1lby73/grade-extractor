@@ -100,7 +100,7 @@ class allClassesV2(Resource):
 
 class genResultV2(Resource):
     @jwt_required()
-    def post(self):
+    def get(self):
 
         embeddedIdentity = json.loads(get_jwt_identity()) #unserialize the data back into string same way it was serialize into json data on the login endpoint
 
